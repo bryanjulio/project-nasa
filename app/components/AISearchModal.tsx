@@ -12,6 +12,7 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
   const [response, setResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -37,17 +38,30 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
 
     setIsLoading(true);
     setResponse("");
+    setError(null);
 
     try {
-      // Simulate AI response (replace with your real AI integration)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setResponse(
-        `AI Response to: "${query}"\n\nThis is a simulated response. You can integrate with your preferred AI API to get real responses based on the user's question.\n\nMission Status: Active\nCommunication Channel: Open\nData Processing: Complete`
-      );
-    } catch {
-      setResponse(
-        "Error processing your query. Please try again.\n\nMission Status: Error\nCommunication Channel: Interrupted"
-      );
+      const response = await fetch("/api/ai-chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: query, fileName: "mars-facts.md" }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Failed to get a response from the AI"
+        );
+      }
+
+      const data = await response.json();
+      setResponse(data.response);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message || "An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +70,7 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
   const handleClear = () => {
     setQuery("");
     setResponse("");
+    setError(null);
   };
 
   if (!isOpen) return null;
@@ -203,7 +218,7 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
             </form>
 
             {/* Response Area */}
-            {(response || isLoading) && (
+            {(response || isLoading || error) && (
               <div className="px-4 pb-4">
                 <div className="bg-gradient-to-br from-slate-800/30 to-slate-900/30 backdrop-blur-sm rounded-xl p-4 min-h-[200px] border border-slate-700/30">
                   {isLoading ? (
@@ -231,6 +246,18 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
                             Establishing connection
                           </p>
                         </div>
+                      </div>
+                    </div>
+                  ) : error ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-red-400 text-xs font-mono">
+                        <div className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />
+                        <span>MISSION: FAILED</span>
+                      </div>
+                      <div className="prose prose-sm max-w-none">
+                        <pre className="whitespace-pre-wrap text-slate-300 font-mono text-xs leading-relaxed">
+                          {error}
+                        </pre>
                       </div>
                     </div>
                   ) : (
