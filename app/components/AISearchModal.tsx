@@ -4,15 +4,14 @@ import { useState, useEffect, useRef } from "react";
 
 interface AISearchModalProps {
   isOpen: boolean;
-  onClose: () => void;
 }
 
-export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
+export default function AISearchModal({ isOpen }: AISearchModalProps) {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -20,17 +19,6 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
       inputRef.current.focus();
     }
   }, [isExpanded]);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsExpanded(false);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,19 +64,78 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-3rem)]">
-      {/* Widget Container */}
-      <div className="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden">
-        {/* Glowing border effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-blue-500/20 rounded-2xl blur-sm" />
+    <div className="fixed bottom-6 right-6 z-50">
+      {!isExpanded ? (
+        /* Minimized Version - Just Icon */
+        <button
+          onClick={() => setIsExpanded(true)}
+          className="relative w-14 h-14 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full shadow-2xl shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-110 group"
+        >
+          {/* Glowing border effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-blue-500/20 rounded-full blur-sm" />
 
-        {/* Compact Header - Always Visible */}
-        <div className="relative flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-slate-800/50 to-slate-900/50">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/25">
+          {/* Icon */}
+          <div className="relative flex items-center justify-center w-full h-full">
+            <svg
+              className="w-6 h-6 text-white group-hover:scale-110 transition-transform duration-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+
+          {/* Pulse animation */}
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur opacity-30 animate-pulse" />
+        </button>
+      ) : (
+        /* Expanded Version - Full Modal */
+        <div className="w-96 max-w-[calc(100vw-3rem)]">
+          {/* Widget Container */}
+          <div className="relative bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 overflow-hidden">
+            {/* Glowing border effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-blue-500/20 rounded-2xl blur-sm" />
+
+            {/* Compact Header */}
+            <div className="relative flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-slate-800/50 to-slate-900/50">
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/25">
+                    <svg
+                      className="w-5 h-5 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg blur opacity-30 animate-pulse" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    NASA AI
+                  </h3>
+                  <p className="text-xs text-slate-400">Interstellar Search</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsExpanded(false)}
+                className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors group"
+              >
                 <svg
-                  className="w-5 h-5 text-white"
+                  className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -97,64 +144,12 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg blur opacity-30 animate-pulse" />
+              </button>
             </div>
-            <div>
-              <h3 className="text-lg font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                NASA AI
-              </h3>
-              <p className="text-xs text-slate-400">Interstellar Search</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors group"
-            >
-              <svg
-                className={`w-5 h-5 text-slate-400 group-hover:text-white transition-all duration-300 ${
-                  isExpanded ? "rotate-180" : ""
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors group"
-            >
-              <svg
-                className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
 
-        {/* Expandable Content */}
-        {isExpanded && (
-          <div className="relative">
             {/* Search Form */}
             <form onSubmit={handleSubmit} className="p-4">
               <div className="relative">
@@ -282,7 +277,7 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                  <span>ESC to minimize</span>
+                  <span>Click icon to minimize</span>
                 </div>
                 <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-bold">
                   NASA AI
@@ -290,8 +285,8 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

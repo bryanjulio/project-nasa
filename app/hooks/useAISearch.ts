@@ -1,25 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export function useAISearch() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen] = useState(true); // Always open
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Ctrl/Cmd + K to open the modal
-      if ((event.ctrlKey || event.metaKey) && event.key === "k") {
-        event.preventDefault();
-        setIsOpen(true);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
+  const openModal = () => {}; // No-op since modal is always open
+  const closeModal = () => {}; // No-op since modal can't be closed
 
   return {
     isOpen,

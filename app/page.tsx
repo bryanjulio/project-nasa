@@ -30,19 +30,12 @@ export default function Home() {
             Save and see your changes instantly.
           </li>
           <li className="tracking-[-.01em]">
-            Press{" "}
-            <kbd className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs font-mono">
-              Ctrl + K
-            </kbd>{" "}
-            to open NASA AI search.
+            Click the NASA AI icon in the bottom-right corner to search.
           </li>
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <button
-            onClick={openModal}
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white gap-2 hover:from-cyan-400 hover:to-blue-500 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
-          >
+          <div className="rounded-full border border-solid border-transparent flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white gap-2 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto shadow-lg shadow-cyan-500/25">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -56,8 +49,8 @@ export default function Home() {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            NASA AI Search
-          </button>
+            NASA AI Search - Click Icon
+          </div>
           <a
             className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
@@ -117,7 +110,7 @@ export default function Home() {
       </footer>
 
       {/* AI Search Modal */}
-      <AISearchModal isOpen={isOpen} onClose={closeModal} />
+      <AISearchModal isOpen={isOpen} />
     </div>
   );
 }
