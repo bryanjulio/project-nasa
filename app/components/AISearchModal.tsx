@@ -41,12 +41,12 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
     setError(null);
 
     try {
-      const response = await fetch("/api/ai-chat", {
+      const response = await fetch("/api/ai-detect-template", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt: query, fileName: "mars-facts.md" }),
+        body: JSON.stringify({ prompt: query }),
       });
 
       if (!response.ok) {

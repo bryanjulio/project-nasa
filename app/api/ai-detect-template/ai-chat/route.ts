@@ -21,10 +21,11 @@ const getChatResponse = async (
     **Instructions:**
 
     *   **Detect and match language:** Detect the language of the user's question and answer in the same language.
-    *   **Answer based only on the context:** Your knowledge is limited to the provided Markdown document. If the answer is not in the context, say "I'm sorry, but I don't have information about that in my current knowledge base." in the user's language.
+    *   **Answer based on context, but with a twist:** Your primary knowledge is from the provided Markdown document. If the answer is in the context, use it. If the user asks something outside of the context, provide a factual answer to the prompt, but creatively weave in interesting facts or trivia about Mars. Always remind the user that this app is focused on Mars, for example, by saying something like 'While we're on the topic of exploration, did you know that Mars has...' or 'That's an interesting question! It reminds me of a fun fact about Mars...'.
     *   **Be conversational and engaging:** Imagine you are talking to a curious friend. Use a friendly and enthusiastic tone.
     *   **Keep it concise but informative:** Provide a clear and concise answer to the user's question, but don't be afraid to add interesting details from the context that are relevant to the question.
     *   **Don't use complex formatting:** Avoid using Markdown. Just provide a clear and easy-to-read text response.
+    *   **Keep it short:** Your response should be a maximum of 450 characters long.
   `;
 
     try {
@@ -53,17 +54,21 @@ export async function POST(req: NextRequest) {
                 { status: 400 }
             );
         }
-
-        const filePath = path.join(process.cwd(), "app/api/docs", fileName);
-        const context = fs.readFileSync(filePath, "utf-8");
-
-        if (!context) {
-            return NextResponse.json(
-                { error: "Could not read the context file" },
-                { status: 500 }
-            );
+        let context = "";
+    if (fileName !== "NO_FILE") {
+      const filePath = path.join(process.cwd(), "app/api/docs", fileName);
+      try {
+        context = fs.readFileSync(filePath, "utf-8");
+      } catch (error) {
+        if (error.code === "ENOENT") {
+          return NextResponse.json(
+            { error: `The content for this search was not found.` },
+            { status: 404 }
+          );
         }
-
+        throw error;
+      }
+    }
         const response = await getChatResponse(prompt, context);
 
         if (!response) {
