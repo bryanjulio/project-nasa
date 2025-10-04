@@ -349,7 +349,7 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
             <div className="relative w-20 h-20 flex items-center justify-center">
               {/* Orbiting Mars Moon - Phobos/Deimos */}
               <div className="absolute inset-0 moon-orbit pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1">
                   <div className="w-3 h-3 bg-gray-400 rounded-full shadow-lg shadow-gray-400/50">
                     <div className="w-1 h-1 bg-gray-200 rounded-full absolute top-0.5 left-0.5"></div>
                     <div className="w-0.5 h-0.5 bg-gray-300 rounded-full absolute bottom-0.5 right-0.5"></div>
