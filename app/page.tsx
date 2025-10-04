@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { TilesRenderer, GlobeControls } from "3d-tiles-renderer";
 import { CesiumIonAuthPlugin } from "3d-tiles-renderer/plugins";
+import Tablet from "./components/tablet/Tablet";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -93,6 +94,7 @@ export default function Home() {
   return (
     <div className="w-screen h-screen">
       <canvas ref={canvasRef} className="block w-full h-full" />
+      <Tablet />
     </div>
   );
 }
