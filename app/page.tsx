@@ -1,6 +1,12 @@
+"use client";
+
 import Image from "next/image";
+import AISearchModal from "./components/AISearchModal";
+import { useAISearch } from "./hooks/useAISearch";
 
 export default function Home() {
+  const { isOpen, openModal, closeModal } = useAISearch();
+
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -20,27 +26,38 @@ export default function Home() {
             </code>
             .
           </li>
-          <li className="tracking-[-.01em]">
+          <li className="tracking-[-.01em] mb-2">
             Save and see your changes instantly.
+          </li>
+          <li className="tracking-[-.01em]">
+            Press{" "}
+            <kbd className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs font-mono">
+              Ctrl + K
+            </kbd>{" "}
+            to open NASA AI search.
           </li>
         </ol>
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={openModal}
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white gap-2 hover:from-cyan-400 hover:to-blue-500 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            NASA AI Search
+          </button>
           <a
             className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
@@ -98,6 +115,9 @@ export default function Home() {
           Go to nextjs.org →
         </a>
       </footer>
+
+      {/* AI Search Modal */}
+      <AISearchModal isOpen={isOpen} onClose={closeModal} />
     </div>
   );
 }
