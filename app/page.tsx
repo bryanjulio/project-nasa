@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -14,7 +14,7 @@ import MarsStorySheet from "./components/MarsStorySheet";
 import { useMarsCoordinateListener } from "./hooks/useMarsCoordinates";
 import Toggle2D3D from "./components/Toggle2D3D";
 
-export default function SpaceScene() {
+function SpaceSceneContent() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { isOpen } = useAISearch();
   const [isStoriesModalOpen, setIsStoriesModalOpen] = useState(false);
@@ -285,5 +285,32 @@ export default function SpaceScene() {
       />
       <MarsStorySheet />
     </main>
+  );
+}
+
+export default function SpaceScene() {
+  return (
+    <Suspense
+      fallback={
+        <main className="relative h-screen w-full overflow-hidden">
+          <div className="absolute inset-0 w-full h-full bg-black z-50 flex flex-col justify-center items-center">
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-16 h-16 border-4 border-red-900/30 border-t-red-500 rounded-full animate-spin mb-6"></div>
+              <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">
+                Loading Mars Experience
+              </div>
+              <div className="w-64 h-1 bg-red-900/20 rounded-full overflow-hidden mb-4">
+                <div className="h-full bg-gradient-to-r from-red-500 via-orange-500 to-red-400 rounded-full animate-pulse"></div>
+              </div>
+              <div className="text-red-300 text-sm text-center">
+                Preparing journey to Mars...
+              </div>
+            </div>
+          </div>
+        </main>
+      }
+    >
+      <SpaceSceneContent />
+    </Suspense>
   );
 }
