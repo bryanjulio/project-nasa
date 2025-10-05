@@ -33,7 +33,9 @@ export class TileCache {
     // Remover mais antigo se na capacidade
     if (this.cache.size >= this.maxSize) {
       const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+      if (typeof firstKey !== "undefined") {
+        this.cache.delete(firstKey);
+      }
     }
     this.cache.set(key, value);
   }
