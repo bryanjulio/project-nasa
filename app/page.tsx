@@ -11,6 +11,7 @@ import { useAISearch } from "./hooks/useAISearch";
 import StoriesDialog from "./components/StoriesDialog";
 import MarsStorySheet from "./components/MarsStorySheet";
 import { useMarsCoordinateListener } from "./hooks/useMarsCoordinates";
+import Toggle2D3D from "./components/Toggle2D3D";
 
 export default function SpaceScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -18,8 +19,16 @@ export default function SpaceScene() {
   const [isStoriesModalOpen, setIsStoriesModalOpen] = useState(false);
   const [showComponents, setShowComponents] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<"2D" | "3D">("3D");
   const controlsRef = useRef<OrbitControls | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  // Função para lidar com mudança de modo de visualização
+  const handleViewModeChange = (mode: "2D" | "3D") => {
+    setViewMode(mode);
+    // Aqui você pode adicionar lógica adicional para alternar entre 2D e 3D
+    console.log(`Switching to ${mode} mode`);
+  };
 
   // Função para converter coordenadas lat/lon para posição 3D
   const latLonToPosition = (
@@ -258,6 +267,12 @@ export default function SpaceScene() {
       </div>
 
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-20" />
+
+      {/* Toggle 2D/3D Component */}
+      {showComponents && (
+        <Toggle2D3D onToggle={handleViewModeChange} defaultMode={viewMode} />
+      )}
+
       {showComponents && <AISearchModal isOpen={isOpen} />}
       <StoriesDialog
         open={isStoriesModalOpen}
