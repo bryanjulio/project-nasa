@@ -2,7 +2,7 @@
 
 import { ArrowLeft } from "lucide-react";
 import { useTabletRouter } from "../tablet/TabletContext";
-import MarsMap2D from "../mars-2d";
+import MarsMap2D from "../mars-2d/MarsMap2D";
 
 export default function MarsMapScreen() {
   const { goTo } = useTabletRouter();
@@ -21,7 +21,7 @@ export default function MarsMapScreen() {
         <h2 className="text-xl font-semibold text-white">Mars Surface Map</h2>
       </div>
 
-      {/* Conteúdo em tela cheia */}
+      {/* Mapa em tela cheia */}
       <div className="flex-1 w-full h-full">
         <MarsMap2D />
       </div>
