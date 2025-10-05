@@ -98,18 +98,6 @@ export default function MarsMap2D() {
   );
 
   /**
-   * Calcula limites verticais para evitar pan além dos polos
-   */
-  const getVerticalLimits = useCallback(() => {
-    const { rows } = getTileGrid(zoom);
-    const totalHeight = rows * TILE_SIZE;
-    return {
-      max: 0,
-      min: Math.min(0, -(totalHeight - canvasSize.height)),
-    };
-  }, [zoom, canvasSize.height]);
-
-  /**
    * Renderiza os tiles no canvas
    */
   const render = useCallback(() => {
@@ -135,25 +123,18 @@ export default function MarsMap2D() {
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
-    }
-
-    // Limpar canvas
+    } // Limpar canvas
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, rect.width, rect.height);
-
     const { cols, rows } = getTileGrid(zoom);
 
     // Tamanho total do mapa em pixels
     const mapWidth = cols * TILE_SIZE;
     const mapHeight = rows * TILE_SIZE;
 
-    // Calcular posição inicial para centralizar o mapa no canvas
+    // Calcular posição inicial: centralizar o mapa no canvas
     const startX = (rect.width - mapWidth) / 2 + offset.x;
     const startY = (rect.height - mapHeight) / 2 + offset.y;
-
-    console.log(
-      `📊 Grid: ${cols}×${rows} tiles (${mapWidth}×${mapHeight}px) | Canvas: ${rect.width}×${rect.height}px | Offset: ${offset.x},${offset.y}`
-    );
 
     // Renderizar TODOS os tiles do grid
     const tilesToLoad: Array<{
@@ -167,40 +148,17 @@ export default function MarsMap2D() {
       for (let col = 0; col < cols; col++) {
         const drawX = Math.floor(startX + col * TILE_SIZE);
         const drawY = Math.floor(startY + row * TILE_SIZE);
-
         tilesToLoad.push({ col, row, x: drawX, y: drawY });
       }
-    } // Carregar e renderizar tiles
+    }
+
+    // Carregar e renderizar tiles
     tilesToLoad.forEach(async (tile) => {
-      console.log(
-        JSON.stringify(
-          {
-            gridPosition: { col: tile.col, row: tile.row },
-            tileUrl: `/${zoom}/${tile.row}/${tile.col}`,
-            screenPosition: { x: tile.x, y: tile.y },
-          },
-          null,
-          2
-        )
-      );
       const img = await loadTile(zoom, tile.col, tile.row);
       if (img && canvasRef.current) {
         const currentCtx = canvasRef.current.getContext("2d", { alpha: false });
         if (currentCtx) {
           currentCtx.drawImage(img, tile.x, tile.y, TILE_SIZE, TILE_SIZE);
-
-          // DEBUG: Labels
-          currentCtx.save();
-          currentCtx.fillStyle = "rgba(255, 0, 0, 0.8)";
-          currentCtx.fillRect(tile.x, tile.y, 100, 50);
-          currentCtx.fillStyle = "#ffffff";
-          currentCtx.font = "bold 14px monospace";
-          currentCtx.fillText(
-            `C:${tile.col} R:${tile.row}`,
-            tile.x + 5,
-            tile.y + 25
-          );
-          currentCtx.restore();
         }
       }
     });
@@ -226,45 +184,27 @@ export default function MarsMap2D() {
 
   /**
    * Aumenta o zoom
-   */
-  const zoomIn = useCallback(() => {
+   */ const zoomIn = useCallback(() => {
     if (zoom < MAX_ZOOM) {
       setZoom((z) => z + 1);
-      setOffset((prev) => {
-        const newOffset = {
-          x: prev.x * 2,
-          y: prev.y * 2,
-        };
-        // Ajustar limites após zoom
-        const { rows } = getTileGrid(zoom + 1);
-        const totalHeight = rows * TILE_SIZE;
-        const minY = Math.min(0, -(totalHeight - canvasSize.height));
-        newOffset.y = Math.max(minY, Math.min(0, newOffset.y));
-        return newOffset;
-      });
+      setOffset((prev) => ({
+        x: prev.x * 2,
+        y: prev.y * 2,
+      }));
     }
-  }, [zoom, canvasSize.height]);
+  }, [zoom]);
 
   /**
    * Diminui o zoom
-   */
-  const zoomOut = useCallback(() => {
+   */ const zoomOut = useCallback(() => {
     if (zoom > MIN_ZOOM) {
       setZoom((z) => z - 1);
-      setOffset((prev) => {
-        const newOffset = {
-          x: prev.x / 2,
-          y: prev.y / 2,
-        };
-        // Ajustar limites após zoom
-        const { rows } = getTileGrid(zoom - 1);
-        const totalHeight = rows * TILE_SIZE;
-        const minY = Math.min(0, -(totalHeight - canvasSize.height));
-        newOffset.y = Math.max(minY, Math.min(0, newOffset.y));
-        return newOffset;
-      });
+      setOffset((prev) => ({
+        x: prev.x / 2,
+        y: prev.y / 2,
+      }));
     }
-  }, [zoom, canvasSize.height]);
+  }, [zoom]);
 
   /**
    * Handlers de mouse
@@ -284,19 +224,14 @@ export default function MarsMap2D() {
 
       const dx = e.clientX - dragStartRef.current.x;
       const dy = e.clientY - dragStartRef.current.y;
-
       const newOffset = {
         x: dragOffsetRef.current.x + dx,
         y: dragOffsetRef.current.y + dy,
       };
 
-      // Limitar vertical
-      const limits = getVerticalLimits();
-      newOffset.y = Math.max(limits.min, Math.min(limits.max, newOffset.y));
-
       setOffset(newOffset);
     },
-    [isDragging, getVerticalLimits]
+    [isDragging]
   );
 
   const handleMouseUp = useCallback(() => {

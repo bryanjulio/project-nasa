@@ -26,18 +26,6 @@ export async function GET(request: NextRequest) {
     // NASA Trek WMTS: /zoom/TileRow/TileCol (linha/coluna)
     const url = `https://trek.nasa.gov/tiles/Mars/EQ/${layer}/1.0.0/${style}/${tileMatrixSet}/${zoom}/${row}/${col}.${format}`;
 
-    console.log(
-      JSON.stringify(
-        {
-          apiReceived: { row: row, col: col },
-          nasaTrekUrl: `/${zoom}/${row}/${col}.${format}`,
-          interpretation: `zoom=${zoom}, TileRow=${row}(vertical), TileCol=${col}(horizontal)`,
-        },
-        null,
-        2
-      )
-    );
-
     const response = await fetch(url);
 
     if (!response.ok) {
