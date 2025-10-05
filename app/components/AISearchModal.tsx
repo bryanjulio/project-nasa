@@ -596,7 +596,10 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
               {/* Compact Header */}
               <div className="relative flex items-center justify-between p-4 border-b border-slate-600/20 bg-gradient-to-r from-slate-700/20 to-slate-800/20">
                 <div className="flex items-center gap-3">
-                  <div className="relative">
+                  <button
+                    onClick={() => setIsExpanded(false)}
+                    className="relative hover:scale-105 transition-transform cursor-pointer"
+                  >
                     <div className="w-8 h-8 bg-gradient-to-r from-red-300/40 to-orange-400/40 rounded-lg flex items-center justify-center shadow-lg shadow-red-300/5">
                       <svg
                         className="w-5 h-5 text-white"
@@ -613,7 +616,7 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
                       </svg>
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-r from-red-300/20 to-orange-400/20 rounded-lg blur opacity-10 animate-pulse" />
-                  </div>
+                  </button>
                   <div>
                     <h3 className="text-lg font-bold bg-gradient-to-r from-red-100 via-orange-100 to-amber-100 bg-clip-text text-transparent">
                       MARS AI
