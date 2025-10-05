@@ -181,30 +181,74 @@ export default function MarsMap2D() {
       }
     };
   }, [render]);
+  /**
+   * Zoom focado no ponto do mouse
+   */
+  const zoomAtPoint = useCallback(
+    (mouseX: number, mouseY: number, zoomDelta: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + zoomDelta));
+
+      if (newZoom === zoom) return; // Não mudou o zoom
+
+      // Posição do mouse relativa ao canvas
+      const canvasMouseX = mouseX - rect.left;
+      const canvasMouseY = mouseY - rect.top;
+
+      // Calcular o ponto no mapa antes do zoom
+      const { cols: oldCols, rows: oldRows } = getTileGrid(zoom);
+      const oldMapWidth = oldCols * TILE_SIZE;
+      const oldMapHeight = oldRows * TILE_SIZE;
+      const oldStartX = (rect.width - oldMapWidth) / 2 + offset.x;
+      const oldStartY = (rect.height - oldMapHeight) / 2 + offset.y;
+      const mapPointX = canvasMouseX - oldStartX;
+      const mapPointY = canvasMouseY - oldStartY;
+
+      // Calcular escala
+      const scale = Math.pow(2, newZoom - zoom);
+
+      // Novo offset para manter o ponto do mouse fixo
+      const { cols: newCols, rows: newRows } = getTileGrid(newZoom);
+      const newMapWidth = newCols * TILE_SIZE;
+      const newMapHeight = newRows * TILE_SIZE;
+      const newStartX = (rect.width - newMapWidth) / 2;
+      const newStartY = (rect.height - newMapHeight) / 2;
+
+      // Calcular novo offset
+      const newMapPointX = mapPointX * scale;
+      const newMapPointY = mapPointY * scale;
+      const newOffsetX = canvasMouseX - newStartX - newMapPointX;
+      const newOffsetY = canvasMouseY - newStartY - newMapPointY;
+      setZoom(newZoom);
+      setOffset({ x: newOffsetX, y: newOffsetY });
+    },
+    [zoom, offset]
+  );
 
   /**
-   * Aumenta o zoom
-   */ const zoomIn = useCallback(() => {
-    if (zoom < MAX_ZOOM) {
-      setZoom((z) => z + 1);
-      setOffset((prev) => ({
-        x: prev.x * 2,
-        y: prev.y * 2,
-      }));
+   * Aumenta o zoom (botão)
+   */
+  const zoomIn = useCallback(() => {
+    if (zoom < MAX_ZOOM && canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      // Zoom no centro da tela
+      zoomAtPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, 1);
     }
-  }, [zoom]);
+  }, [zoom, zoomAtPoint]);
 
   /**
-   * Diminui o zoom
-   */ const zoomOut = useCallback(() => {
-    if (zoom > MIN_ZOOM) {
-      setZoom((z) => z - 1);
-      setOffset((prev) => ({
-        x: prev.x / 2,
-        y: prev.y / 2,
-      }));
+   * Diminui o zoom (botão)
+   */
+  const zoomOut = useCallback(() => {
+    if (zoom > MIN_ZOOM && canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      // Zoom no centro da tela
+      zoomAtPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, -1);
     }
-  }, [zoom]);
+  }, [zoom, zoomAtPoint]);
 
   /**
    * Handlers de mouse
@@ -233,10 +277,21 @@ export default function MarsMap2D() {
     },
     [isDragging]
   );
-
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
+
+  /**
+   * Handler de scroll do mouse para zoom
+   */
+  const handleWheel = useCallback(
+    (e: React.WheelEvent) => {
+      e.preventDefault();
+      const zoomDelta = e.deltaY > 0 ? -1 : 1;
+      zoomAtPoint(e.clientX, e.clientY, zoomDelta);
+    },
+    [zoomAtPoint]
+  );
 
   const grid = getTileGrid(zoom);
 
@@ -250,6 +305,7 @@ export default function MarsMap2D() {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
       />
 
       {/* Seletor de Camadas */}
