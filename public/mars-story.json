@@ -1,0 +1,231 @@
+[
+  {
+    "id": "olympus-mons",
+    "name": "Olympus Mons",
+    "type": "volcano",
+    "description": "The largest volcano in the Solar System, rising over 21 kilometers above the Martian surface",
+    "location": "Western hemisphere, Tharsis Plateau",
+    "coordinates": "18.4,226.0",
+    "discovery": "1971 by Mariner 9",
+    "facts": {
+      "height": "21.9 km (13.6 mi)",
+      "diameter": "600 km (373 mi)",
+      "caldera_width": "85 km (53 mi)",
+      "comparison": "Nearly three times Mount Everest",
+      "last_eruption": "~25 million years ago",
+      "atmospheric_pressure_at_summit": "72 pascals (12% of Martian average)"
+    },
+    "steps": [
+      {
+        "step": 1,
+        "title": "Approach the base",
+        "description": "Navigate rover to the volcano's outer rim through the steep basal scarp",
+        "details": "The basal scarp rises up to 6 km above surrounding plains, forming a massive cliff"
+      },
+      {
+        "step": 2,
+        "title": "Collect rock samples",
+        "description": "Extract volcanic rock from the caldera complex",
+        "details": "The caldera contains overlapping collapse craters formed by magma withdrawal"
+      },
+      {
+        "step": 3,
+        "title": "Analyze data",
+        "description": "Process samples and send results to Earth",
+        "details": "Samples contain basaltic lava with iron oxides, silicates, and traces of halloysite clay"
+      }
+    ],
+    "scientific_significance": "Reveals Mars' volcanic history and tectonic evolution",
+    "exploration_missions": [
+      "Mariner 9",
+      "Viking Orbiters",
+      "Mars Global Surveyor",
+      "Mars Odyssey",
+      "Mars Express",
+      "Mars Reconnaissance Orbiter"
+    ]
+  },
+  {
+    "id": "valles-marineris",
+    "name": "Valles Marineris",
+    "type": "canyon",
+    "description": "The largest canyon system in the Solar System, stretching over 3,000 kilometers",
+    "location": "Near Martian equator, extending from Noctis Labyrinthus to chaotic terrain",
+    "coordinates": "12.0,101.0",
+    "discovery": "1971 by Mariner 9",
+    "facts": {
+      "length": "Over 3,000 km (1,860 mi)",
+      "width": "Up to 600 km wide",
+      "depth": "Up to 8 km deep",
+      "comparison": "More than 10 times longer and 6 times deeper than Earth's Grand Canyon",
+      "formation": "Tectonic fracture from Tharsis uplift, widened by erosion"
+    },
+    "steps": [
+      {
+        "step": 1,
+        "title": "Survey from above",
+        "description": "Map the canyon using aerial drone",
+        "details": "Use MOLA laser altimeter data to create precise topographic maps"
+      },
+      {
+        "step": 2,
+        "title": "Descend into canyon",
+        "description": "Carefully navigate down the steep walls",
+        "details": "Walls expose layered deposits of carbonates and sulfates from ancient water"
+      },
+      {
+        "step": 3,
+        "title": "Study rock layers",
+        "description": "Examine geological history in exposed walls",
+        "details": "Layers reveal billions of years of Mars' geological evolution and climate history"
+      }
+    ],
+    "scientific_significance": "Clues to Mars' tectonic evolution, climate history, and potential past habitability",
+    "exploration_missions": [
+      "Mariner 9",
+      "Viking Orbiters",
+      "Mars Global Surveyor",
+      "Mars Odyssey",
+      "Mars Express",
+      "Mars Reconnaissance Orbiter"
+    ]
+  },
+  {
+    "id": "mars-poles",
+    "name": "Mars Polar Ice Caps",
+    "type": "ice_cap",
+    "description": "Dynamic regions of carbon dioxide and water ice revealing Mars' climate history",
+    "location": "Northern and Southern poles",
+    "coordinates": "90.0,0.0",
+    "discovery": "1971 by Mariner 9",
+    "facts": {
+      "northern_cap_size": "~1,000 km (621 mi) across",
+      "chasma_boreale_depth": "~2 km (1.2 mi) deep",
+      "composition": "CO₂ dry ice dominates; water ice persists year-round",
+      "seasonal_changes": "CO₂ sublimates in spring, refreezes in winter",
+      "surface_patterns": "Spiders, starbursts, and araneiform formations"
+    },
+    "steps": [
+      {
+        "step": 1,
+        "title": "Prepare for extreme cold",
+        "description": "Test equipment in -125°C conditions",
+        "details": "Atmospheric pressure drops to only 72 pascals at the summit"
+      },
+      {
+        "step": 2,
+        "title": "Drill ice core",
+        "description": "Extract deep ice sample for climate data",
+        "details": "Use SHARAD radar to map subsurface ice layers and dust deposits"
+      },
+      {
+        "step": 3,
+        "title": "Analyze ice composition",
+        "description": "Study water and CO₂ layers in sample",
+        "details": "Layers preserve records of atmospheric variation and axial tilt changes"
+      }
+    ],
+    "scientific_significance": "Reveals climate cycles, atmospheric processes, and possible water resources",
+    "exploration_missions": [
+      "Mariner 9",
+      "Mars Global Surveyor",
+      "Mars Reconnaissance Orbiter",
+      "Mars Odyssey",
+      "Mars Express",
+      "James Webb Space Telescope"
+    ]
+  },
+  {
+    "id": "cheyava-falls",
+    "name": "Cheyava Falls",
+    "type": "biosignature",
+    "description": "Potential biosignature discovery in Jezero Crater showing complex organic-mineral interactions",
+    "location": "Bright Angel Formation, northern rim of Neretva Vallis, Jezero Crater",
+    "coordinates": "18.4,77.5",
+    "discovery": "July 2024 by Perseverance Rover",
+    "facts": {
+      "age": "~3.5 billion years old",
+      "sample_name": "Sapphire Canyon",
+      "minerals": "Vivianite (Fe₃(PO₄)₂·8H₂O) and Greigite (Fe₃S₄)",
+      "elements": "Organic carbon, iron, sulfur, phosphorus, hydrogen",
+      "confidence_level": "Step 1 (potential signal, requires confirmation)"
+    },
+    "steps": [
+      {
+        "step": 1,
+        "title": "Approach the formation",
+        "description": "Navigate to Bright Angel Formation in Jezero Crater",
+        "details": "Ancient delta where rivers once fed a lake billions of years ago"
+      },
+      {
+        "step": 2,
+        "title": "Analyze rock patterns",
+        "description": "Use SHERLOC and PIXL to study reaction fronts",
+        "details": "Detect organic carbon with phosphorus and sulfur in millimeter-scale textures"
+      },
+      {
+        "step": 3,
+        "title": "Collect sample",
+        "description": "Extract Sapphire Canyon sample for Earth return",
+        "details": "Sealed sample tube for future Mars Sample Return mission analysis"
+      }
+    ],
+    "scientific_significance": "First detection of simultaneous organic compounds, phosphorus, and redox-sensitive minerals in lacustrine context",
+    "exploration_missions": [
+      "Perseverance Rover (Mars 2020)"
+    ]
+  },
+  {
+    "id": "mars-facts",
+    "name": "Mars: The Red Planet",
+    "type": "planet",
+    "description": "Comprehensive overview of Mars' characteristics, climate, and exploration history",
+    "location": "Solar System, 1.52 AU from Sun",
+    "coordinates": "0.0,0.0",
+    "discovery": "Known since ancient times",
+    "facts": {
+      "diameter": "6,779 km (about half of Earth's)",
+      "mass": "6.39 × 10²³ kg (~10.7% of Earth's)",
+      "gravity": "3.71 m/s² (38% of Earth's gravity)",
+      "day_length": "24 hours 39 minutes",
+      "year_length": "687 Earth days",
+      "average_temperature": "−63°C (−81°F)",
+      "atmospheric_pressure": "~600 Pa (less than 1% of Earth's)",
+      "atmosphere_composition": "95.32% CO₂, 2.7% N₂, 1.6% Ar, 0.13% O₂"
+    },
+    "steps": [
+      {
+        "step": 1,
+        "title": "Understand basic characteristics",
+        "description": "Learn about Mars' size, composition, and orbital properties",
+        "details": "Mars is about half the size of Earth with similar day length but much longer year"
+      },
+      {
+        "step": 2,
+        "title": "Explore surface features",
+        "description": "Study major geological formations and surface composition",
+        "details": "Dominant features include Olympus Mons, Valles Marineris, and Tharsis region"
+      },
+      {
+        "step": 3,
+        "title": "Investigate potential for life",
+        "description": "Examine evidence of past water and current exploration",
+        "details": "Evidence suggests Mars was habitable 3-4 billion years ago with flowing water"
+      }
+    ],
+    "scientific_significance": "Template for planetary evolution and potential future human exploration",
+    "exploration_missions": [
+      "Mariner 4",
+      "Mariner 9",
+      "Viking 1 & 2",
+      "Mars Global Surveyor",
+      "Mars Pathfinder",
+      "Mars Odyssey",
+      "Mars Express",
+      "Curiosity",
+      "InSight",
+      "Perseverance",
+      "Tianwen-1"
+    ]
+  }
+]

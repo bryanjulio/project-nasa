@@ -4,10 +4,66 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { TilesRenderer, GlobeControls } from "3d-tiles-renderer";
 import { CesiumIonAuthPlugin } from "3d-tiles-renderer/plugins";
-import Tablet from "./components/tablet/Tablet";
+import MarsStorySheet from "./components/MarsStorySheet";
+import { useMarsCoordinateListener } from "./hooks/useMarsCoordinates";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const controlsRef = useRef<GlobeControls | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+
+  // Função para converter coordenadas lat/lon para posição 3D
+  const latLonToPosition = (
+    lat: number,
+    lon: number,
+    radius: number = 3390000
+  ) => {
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lon + 180) * (Math.PI / 180);
+
+    return new THREE.Vector3(
+      radius * Math.sin(phi) * Math.cos(theta),
+      radius * Math.cos(phi),
+      radius * Math.sin(phi) * Math.sin(theta)
+    );
+  };
+
+  // Listener para mudanças de coordenadas
+  useMarsCoordinateListener((coordinate) => {
+    if (controlsRef.current && cameraRef.current) {
+      const position = latLonToPosition(
+        coordinate.lat,
+        coordinate.lon,
+        coordinate.zoom || 1000000
+      );
+
+      // Animar para a nova posição
+      const startPosition = cameraRef.current.position.clone();
+      const startTime = Date.now();
+      const duration = 2000; // 2 segundos
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function (ease-out)
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+        cameraRef.current!.position.lerpVectors(
+          startPosition,
+          position,
+          easeProgress
+        );
+        controlsRef.current!.update();
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      animate();
+    }
+  });
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -37,6 +93,7 @@ export default function Home() {
     );
     camera.position.set(0, 0, 10000000);
     camera.lookAt(0, 0, 0);
+    cameraRef.current = camera;
 
     // Tiles do Cesium Ion (Marte)
     const ionToken = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN;
@@ -61,6 +118,7 @@ export default function Home() {
     );
     controls.enableDamping = true;
     controls.minDistance = 1000;
+    controlsRef.current = controls;
 
     // Loop
     let frameId: number;
@@ -88,13 +146,15 @@ export default function Home() {
       tilesRenderer.dispose();
       controls.dispose();
       renderer.dispose();
+      controlsRef.current = null;
+      cameraRef.current = null;
     };
   }, []);
 
   return (
     <div className="w-screen h-screen">
       <canvas ref={canvasRef} className="block w-full h-full" />
-      <Tablet />
+      <MarsStorySheet />
     </div>
   );
 }
