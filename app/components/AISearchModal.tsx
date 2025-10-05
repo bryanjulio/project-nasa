@@ -485,15 +485,15 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
           /* Expanded Version - Full Modal */
           <div className="w-96 max-w-[calc(100vw-3rem)]">
             {/* Widget Container */}
-            <div className="relative bg-gradient-to-br from-red-900/60 to-orange-900/60 backdrop-blur-xl rounded-2xl shadow-2xl border border-red-500/20 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-slate-800/30 to-slate-900/30 backdrop-blur-xl rounded-2xl shadow-2xl border border-red-300/10 overflow-hidden">
               {/* Glowing border effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-orange-500/20 to-amber-500/20 rounded-2xl blur-sm" />
 
               {/* Compact Header */}
-              <div className="relative flex items-center justify-between p-4 border-b border-red-500/20 bg-gradient-to-r from-red-800/20 to-orange-800/20">
+              <div className="relative flex items-center justify-between p-4 border-b border-slate-600/20 bg-gradient-to-r from-slate-700/20 to-slate-800/20">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <div className="w-8 h-8 bg-gradient-to-r from-red-400/80 to-orange-500/80 rounded-lg flex items-center justify-center shadow-lg shadow-red-500/15">
+                    <div className="w-8 h-8 bg-gradient-to-r from-red-300/40 to-orange-400/40 rounded-lg flex items-center justify-center shadow-lg shadow-red-300/5">
                       <svg
                         className="w-5 h-5 text-white"
                         fill="none"
@@ -508,23 +508,23 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
                         />
                       </svg>
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-red-400/60 to-orange-500/60 rounded-lg blur opacity-20 animate-pulse" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-300/20 to-orange-400/20 rounded-lg blur opacity-10 animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold bg-gradient-to-r from-red-300 via-orange-300 to-amber-300 bg-clip-text text-transparent">
-                      NASA AI
+                    <h3 className="text-lg font-bold bg-gradient-to-r from-red-100 via-orange-100 to-amber-100 bg-clip-text text-transparent">
+                      MARS AI
                     </h3>
-                    <p className="text-xs text-orange-100">
+                    <p className="text-xs text-slate-300">
                       Interstellar Search
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsExpanded(false)}
-                  className="p-2 hover:bg-red-700/20 rounded-lg transition-colors group"
+                  className="p-2 hover:bg-slate-600/20 rounded-lg transition-colors group"
                 >
                   <svg
-                    className="w-5 h-5 text-orange-100 group-hover:text-white transition-colors"
+                    className="w-5 h-5 text-slate-300 group-hover:text-white transition-colors"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -548,13 +548,13 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Enter your cosmic query..."
-                    className="w-full px-4 py-3 pr-12 bg-red-800/20 border border-red-500/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/20 text-white placeholder-orange-100 backdrop-blur-sm transition-all duration-300"
+                    className="w-full px-4 py-3 pr-12 bg-slate-700/20 border border-slate-500/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300/20 focus:border-red-300/20 text-white placeholder-slate-300 backdrop-blur-sm transition-all duration-300"
                     disabled={isLoading}
                   />
                   <button
                     type="submit"
                     disabled={!query.trim() || isLoading}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-gradient-to-r from-red-500/80 to-orange-500/80 hover:from-red-400/90 hover:to-orange-400/90 disabled:from-red-600/60 disabled:to-red-700/60 text-white rounded-lg transition-all duration-300 disabled:cursor-not-allowed shadow-lg shadow-red-500/15"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-gradient-to-r from-red-300/50 to-orange-300/50 hover:from-red-200/60 hover:to-orange-200/60 disabled:from-slate-500/40 disabled:to-slate-600/40 text-white rounded-lg transition-all duration-300 disabled:cursor-not-allowed shadow-lg shadow-red-300/5"
                   >
                     {isLoading ? (
                       <svg
@@ -593,7 +593,7 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
                     <button
                       type="button"
                       onClick={handleClear}
-                      className="px-3 py-1 text-sm text-orange-100 hover:text-white transition-colors border border-red-500/20 rounded-lg hover:bg-red-700/15"
+                      className="px-3 py-1 text-sm text-slate-300 hover:text-white transition-colors border border-slate-500/20 rounded-lg hover:bg-slate-600/15"
                     >
                       Clear
                     </button>
@@ -604,13 +604,13 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
               {/* Response Area */}
               {(response || isLoading || error) && (
                 <div className="px-4 pb-4">
-                  <div className="bg-gradient-to-br from-red-800/15 to-orange-800/15 backdrop-blur-sm rounded-xl p-4 min-h-[200px] border border-red-500/15">
+                  <div className="bg-gradient-to-br from-slate-700/15 to-slate-800/15 backdrop-blur-sm rounded-xl p-4 min-h-[200px] border border-slate-600/15">
                     {isLoading ? (
                       <div className="flex items-center justify-center h-24">
-                        <div className="flex flex-col items-center gap-3 text-orange-100">
+                        <div className="flex flex-col items-center gap-3 text-slate-300">
                           <div className="relative">
                             <svg
-                              className="w-6 h-6 animate-spin text-red-400"
+                              className="w-6 h-6 animate-spin text-red-300"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -622,11 +622,11 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                               />
                             </svg>
-                            <div className="absolute inset-0 bg-red-400/20 rounded-full blur animate-pulse" />
+                            <div className="absolute inset-0 bg-red-300/10 rounded-full blur animate-pulse" />
                           </div>
                           <div className="text-center">
                             <p className="text-sm font-medium">Processing...</p>
-                            <p className="text-xs text-orange-200">
+                            <p className="text-xs text-slate-400">
                               Establishing connection
                             </p>
                           </div>
@@ -639,7 +639,7 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
                           <span>MISSION: FAILED</span>
                         </div>
                         <div className="prose prose-sm max-w-none">
-                          <pre className="whitespace-pre-wrap text-orange-50 font-mono text-xs leading-relaxed">
+                          <pre className="whitespace-pre-wrap text-slate-200 font-mono text-xs leading-relaxed">
                             {error}
                           </pre>
                         </div>
@@ -651,7 +651,7 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
                           <span>MISSION: ACTIVE</span>
                         </div>
                         <div className="prose prose-sm max-w-none">
-                          <pre className="whitespace-pre-wrap text-orange-50 font-mono text-xs leading-relaxed">
+                          <pre className="whitespace-pre-wrap text-slate-200 font-mono text-xs leading-relaxed">
                             {response}
                           </pre>
                         </div>
@@ -662,14 +662,14 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
               )}
 
               {/* Footer */}
-              <div className="px-4 py-3 border-t border-red-500/20 bg-gradient-to-r from-red-800/15 to-orange-800/15 rounded-b-2xl">
-                <div className="flex items-center justify-between text-xs text-orange-100">
+              <div className="px-4 py-3 border-t border-slate-600/20 bg-gradient-to-r from-slate-700/15 to-slate-800/15 rounded-b-2xl">
+                <div className="flex items-center justify-between text-xs text-slate-300">
                   <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-orange-200 rounded-full animate-pulse" />
+                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse" />
                     <span>Click icon to minimize</span>
                   </div>
-                  <span className="bg-gradient-to-r from-red-300 to-orange-300 bg-clip-text text-transparent font-bold">
-                    NASA AI
+                  <span className="bg-gradient-to-r from-red-100 to-orange-100 bg-clip-text text-transparent font-bold">
+                    MARS AI
                   </span>
                 </div>
               </div>
