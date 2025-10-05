@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -124,9 +125,7 @@ export default function StarfieldAnimation({
           ctx.beginPath();
           ctx.moveTo(star.prevX, star.prevY);
           ctx.lineTo(x, y);
-          ctx.strokeStyle = `rgba(255, 255, 255, ${
-            brightness * 0.8 * fadeOpacity
-          })`;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${brightness * 0.8 * fadeOpacity})`;
           ctx.lineWidth = size;
           ctx.stroke();
         }
