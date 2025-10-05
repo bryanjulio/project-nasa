@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Sheet,
@@ -99,7 +99,7 @@ const getTypeColor = (type: string) => {
   }
 };
 
-export default function MarsStorySheet() {
+function MarsStorySheetContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
@@ -386,5 +386,26 @@ export default function MarsStorySheet() {
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+export default function MarsStorySheet() {
+  return (
+    <Suspense
+      fallback={
+        <Sheet open={false}>
+          <SheetContent side="right" className="w-full sm:max-w-md">
+            <SheetHeader>
+              <SheetTitle>Loading Mars Stories...</SheetTitle>
+            </SheetHeader>
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-400"></div>
+            </div>
+          </SheetContent>
+        </Sheet>
+      }
+    >
+      <MarsStorySheetContent />
+    </Suspense>
   );
 }
