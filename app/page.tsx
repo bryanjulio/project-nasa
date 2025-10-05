@@ -3,6 +3,7 @@
 import Image from "next/image";
 import AISearchModal from "./components/AISearchModal";
 import { useAISearch } from "./hooks/useAISearch";
+import AboutUs from "./components/AboutUs";
 
 export default function Home() {
   const { isOpen, openModal, closeModal } = useAISearch();
@@ -59,6 +60,7 @@ export default function Home() {
           >
             Read our docs
           </a>
+          <AboutUs />
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
