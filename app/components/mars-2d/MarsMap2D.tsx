@@ -5,6 +5,7 @@ import { useTileLoader, type LayerConfig } from "./useTileLoader";
 import { TILE_SIZE, MIN_ZOOM, MAX_ZOOM, getTileGrid } from "./utils";
 import { latLonToPixel, pixelToLatLon } from "./coordinateUtils";
 import { drawLocationPin } from "./pinRenderer";
+import { getVisibleTiles } from "./viewportUtils";
 import { Layers } from "lucide-react";
 
 interface MarsMap2DProps {
@@ -75,7 +76,6 @@ export default function MarsMap2D({
 
   const dragStartRef = useRef({ x: 0, y: 0 });
   const dragOffsetRef = useRef({ x: 0, y: 0 });
-
   const currentLayer = AVAILABLE_LAYERS[currentLayerId];
   const { loadTile, loadingCount, cacheSize, cancelAll } =
     useTileLoader(currentLayer);
@@ -88,12 +88,14 @@ export default function MarsMap2D({
       rows,
       mapWidth: cols * TILE_SIZE,
       mapHeight: rows * TILE_SIZE,
+      totalTiles: cols * rows,
     };
   }, [zoom]);
 
   /**
    * Centralizar mapa ao iniciar ou quando lat/lon mudam
-   */ useEffect(() => {
+   */
+  useEffect(() => {
     if (!isInitialized && canvasSize.width > 0 && canvasSize.height > 0) {
       if (latitude !== undefined && longitude !== undefined) {
         // Se lat/lon foram fornecidos, centralizar nessa posição
@@ -160,26 +162,21 @@ export default function MarsMap2D({
 
     // Usar dimensões memoizadas
     const { cols, rows, mapWidth, mapHeight } = mapDimensions;
-
-    // Calcular posição inicial: centralizar o mapa no canvas
     const startX = (rect.width - mapWidth) / 2 + offset.x;
     const startY = (rect.height - mapHeight) / 2 + offset.y;
 
-    // Renderizar TODOS os tiles do grid
-    const tilesToLoad: Array<{
-      col: number;
-      row: number;
-      x: number;
-      y: number;
-    }> = [];
+    // Calcular tiles visíveis
+    const tilesToLoad = getVisibleTiles(
+      rect.width,
+      rect.height,
+      startX,
+      startY,
+      cols,
+      rows,
+      TILE_SIZE
+    );
 
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        const drawX = Math.floor(startX + col * TILE_SIZE);
-        const drawY = Math.floor(startY + row * TILE_SIZE);
-        tilesToLoad.push({ col, row, x: drawX, y: drawY });
-      }
-    } // Função para desenhar o pin
+    // Função para desenhar o pin
     const drawPin = () => {
       if (
         latitude === undefined ||

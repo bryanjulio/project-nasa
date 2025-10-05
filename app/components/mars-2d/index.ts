@@ -6,3 +6,4 @@ export * from "./types";
 export * from "./utils";
 export * from "./coordinateUtils";
 export * from "./pinRenderer";
+export * from "./viewportUtils";
