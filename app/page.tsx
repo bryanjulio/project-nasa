@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import StarfieldAnimation from "./components/starfield-animation";
@@ -20,6 +21,8 @@ export default function SpaceScene() {
   const [isLoading, setIsLoading] = useState(true);
   const controlsRef = useRef<OrbitControls | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const searchParams = useSearchParams();
+  const isStoryActive = searchParams.get("story") !== null;
 
   // Função para converter coordenadas lat/lon para posição 3D
   const latLonToPosition = (
@@ -240,22 +243,24 @@ export default function SpaceScene() {
       )}
 
       <StarfieldAnimation duration={5} />
-      <div
-        className={`absolute inset-0 w-full h-full bg-black/40 z-30 flex justify-center items-center 
+      {showComponents && !isStoryActive && (
+        <div
+          className={`absolute inset-0 w-full h-full bg-black/40 z-30 flex justify-center items-center 
   transition-opacity duration-700 ease-out
   ${
     showComponents
       ? "opacity-100 translate-y-0"
       : "opacity-0 translate-y-4 pointer-events-none"
   }`}
-      >
-        <button
-          className="h-fit py-2 px-4 rounded-md bg-gradient-to-r from-red-500/20 via-orange-500/20 to-red-400/20 hover:bg-red-500/30 transition-colors duration-300 border border-red-300/20 shadow-lg shadow-red-500/10 text-white  font-semibold"
-          onClick={() => setIsStoriesModalOpen(true)}
         >
-          Explore Stories
-        </button>
-      </div>
+          <button
+            className="h-fit py-2 px-4 rounded-md bg-gradient-to-r from-red-500/20 via-orange-500/20 to-red-400/20 hover:bg-red-500/30 transition-colors duration-300 border border-red-300/20 shadow-lg shadow-red-500/10 text-white  font-semibold"
+            onClick={() => setIsStoriesModalOpen(true)}
+          >
+            Explore Stories
+          </button>
+        </div>
+      )}
 
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-20" />
       {showComponents && <AISearchModal isOpen={isOpen} />}
