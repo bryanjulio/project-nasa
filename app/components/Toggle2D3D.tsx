@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface Toggle2D3DProps {
@@ -15,11 +15,24 @@ export default function Toggle2D3D({
   className,
 }: Toggle2D3DProps) {
   const [activeMode, setActiveMode] = useState<"2D" | "3D">(defaultMode);
+  const [shouldShow, setShouldShow] = useState(false);
+
+  useEffect(() => {
+    // Check if there's a 'story' query parameter in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasStoryParam = urlParams.has("story");
+    setShouldShow(hasStoryParam);
+  }, []);
 
   const handleToggle = (mode: "2D" | "3D") => {
     setActiveMode(mode);
     onToggle(mode);
   };
+
+  // Don't render if there's no 'story' query parameter
+  if (!shouldShow) {
+    return null;
+  }
 
   return (
     <div

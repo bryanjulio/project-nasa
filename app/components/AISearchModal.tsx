@@ -1,5 +1,6 @@
 "use client";
 
+import { SparklesIcon } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 // Custom CSS for 3D planet effects
@@ -171,6 +172,17 @@ const planetStyles = `
     }
   }
   
+  @keyframes fadeIn {
+    0% { 
+      opacity: 0; 
+      transform: translateY(10px) scale(0.95);
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0) scale(1);
+    }
+  }
+  
   .planet-3d {
     animation: planetRotate 25s linear infinite, planetArrival 2.5s ease-out;
     transform-style: preserve-3d;
@@ -202,6 +214,10 @@ const planetStyles = `
   
   .warp-speed {
     animation: warpSpeed 3s ease-out;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
   }
   
   @keyframes particleTrail {
@@ -267,6 +283,7 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [hasAnimated, setHasAnimated] = useState(false);
   const [hasWarpSpeedAnimated, setHasWarpSpeedAnimated] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -286,11 +303,58 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
       setHasWarpSpeedAnimated(true);
     }, 3500);
 
+    // Check if there are URL parameters
+    const hasUrlParams = window.location.search.length > 0;
+
+    // Show tooltip on first appearance with sound (only if no URL params)
+    if (!hasUrlParams) {
+      const tooltipTimer = setTimeout(() => {
+        setShowTooltip(true);
+        // Play notification sound
+        playNotificationSound();
+      }, 2000);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(warpSpeedTimer);
+        clearTimeout(tooltipTimer);
+      };
+    }
+
     return () => {
       clearTimeout(timer);
       clearTimeout(warpSpeedTimer);
     };
   }, []);
+
+  const playNotificationSound = () => {
+    try {
+      // Create a simple notification sound using Web Audio API
+      const audioContext = new (window.AudioContext ||
+        (window as Window & { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 0.2
+      );
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+    } catch {
+      // Fallback: silent if audio context fails
+      console.log("Audio notification not available");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -331,6 +395,10 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
     setQuery("");
     setResponse("");
     setError(null);
+  };
+
+  const handleTooltipClose = () => {
+    setShowTooltip(false);
   };
 
   if (!isOpen) return null;
@@ -388,34 +456,7 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
                 {/* Search Icon - 3D Effect */}
                 <div className="relative flex items-center justify-center w-full h-full pointer-events-none">
                   <div className="relative">
-                    {/* Icon Shadow */}
-                    <svg
-                      className="absolute w-5 h-5 text-black/20 translate-x-0.5 translate-y-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2.5}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                    {/* Main Icon */}
-                    <svg
-                      className="relative w-5 h-5 text-white/95 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2.5}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
+                    <SparklesIcon fill="white" className="w-5 h-5 text-white" />
                   </div>
                 </div>
 
@@ -462,6 +503,68 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
             <div className="absolute -top-2 -right-4 w-0.5 h-0.5 bg-orange-400 rounded-full star-twinkle star-7 pointer-events-none"></div>
             <div className="absolute -bottom-4 -left-2 w-0.5 h-0.5 bg-amber-400 rounded-full star-twinkle star-8 pointer-events-none"></div>
 
+            {/* Card explicativo */}
+            {showTooltip && (
+              <div className="absolute -left-96 top-1/2 transform -translate-y-1/2 z-50 animate-fade-in">
+                <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-2xl border border-slate-600/30 p-4 max-w-xs">
+                  {/* Botão X para fechar */}
+                  <button
+                    onClick={handleTooltipClose}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-slate-700 hover:bg-slate-600 rounded-full flex items-center justify-center transition-colors z-10"
+                  >
+                    <svg
+                      className="w-3 h-3 text-slate-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Seta apontando para o botão */}
+                  <div className="absolute top-1/2 -right-3 transform -translate-y-1/2">
+                    <div className="relative">
+                      <div className="w-0 h-0 border-t-4 border-b-4 border-l-6 border-transparent border-l-slate-800"></div>
+                      <div className="absolute top-0 left-0 w-0 h-0 border-t-4 border-b-4 border-l-6 border-transparent border-l-slate-900"></div>
+                    </div>
+                  </div>
+
+                  {/* Conteúdo do card */}
+                  <div className="space-y-3">
+                    {/* Cabeçalho */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                      <h3 className="text-sm font-bold text-white">
+                        Mars AI Search
+                      </h3>
+                    </div>
+
+                    {/* Descrição */}
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      This section has an AI specialized in answering questions
+                      about Mars, geology and space exploration.
+                    </p>
+
+                    {/* Instrução */}
+                    <div className="bg-slate-700/50 rounded-lg p-2 border border-slate-600/30">
+                      <p className="text-xs text-slate-200 font-medium">
+                        💡 Click the red planet to get started
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Efeito de brilho sutil */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-orange-500/5 to-amber-500/5 rounded-xl pointer-events-none"></div>
+                </div>
+              </div>
+            )}
+
             {/* Mars Dust Particles Trail */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               <div
@@ -493,7 +596,10 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
               {/* Compact Header */}
               <div className="relative flex items-center justify-between p-4 border-b border-slate-600/20 bg-gradient-to-r from-slate-700/20 to-slate-800/20">
                 <div className="flex items-center gap-3">
-                  <div className="relative">
+                  <button
+                    onClick={() => setIsExpanded(false)}
+                    className="relative hover:scale-105 transition-transform cursor-pointer"
+                  >
                     <div className="w-8 h-8 bg-gradient-to-r from-red-300/40 to-orange-400/40 rounded-lg flex items-center justify-center shadow-lg shadow-red-300/5">
                       <svg
                         className="w-5 h-5 text-white"
@@ -510,7 +616,7 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
                       </svg>
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-r from-red-300/20 to-orange-400/20 rounded-lg blur opacity-10 animate-pulse" />
-                  </div>
+                  </button>
                   <div>
                     <h3 className="text-lg font-bold bg-gradient-to-r from-red-100 via-orange-100 to-amber-100 bg-clip-text text-transparent">
                       MARS AI
