@@ -9,17 +9,16 @@ import { createMars } from "./components/Mars";
 import AISearchModal from "./components/AISearchModal";
 import { useAISearch } from "./hooks/useAISearch";
 import StoriesDialog from "./components/StoriesDialog";
-import { TilesRenderer, GlobeControls } from "3d-tiles-renderer";
-import { CesiumIonAuthPlugin } from "3d-tiles-renderer/plugins";
 import MarsStorySheet from "./components/MarsStorySheet";
 import { useMarsCoordinateListener } from "./hooks/useMarsCoordinates";
 
 export default function SpaceScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { isOpen, openModal, closeModal } = useAISearch();
+  const { isOpen } = useAISearch();
   const [isStoriesModalOpen, setIsStoriesModalOpen] = useState(false);
-  const [showComponents, setShowComponents] = useState(false); // Novo estado
-  const controlsRef = useRef<GlobeControls | null>(null);
+  const [showComponents, setShowComponents] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const controlsRef = useRef<OrbitControls | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
 
   // Função para converter coordenadas lat/lon para posição 3D
@@ -99,23 +98,6 @@ export default function SpaceScene() {
       1,
       1e12
     );
-    camera.position.set(0, 0, 10000000);
-    camera.lookAt(0, 0, 0);
-    cameraRef.current = camera;
-
-    // Tiles do Cesium Ion (Marte)
-    const ionToken = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN;
-    const assetId = 3644333; // Cesium Mars
-    const tilesRenderer = new TilesRenderer();
-    tilesRenderer.registerPlugin(
-      new CesiumIonAuthPlugin({
-        apiToken: ionToken!,
-        assetId: assetId.toString(),
-      })
-    );
-    tilesRenderer.group.rotation.x = -Math.PI / 2; // polo norte "para cima"
-    scene.add(tilesRenderer.group);
-    tilesRenderer.setCamera(camera);
 
     // Controles
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -206,6 +188,11 @@ export default function SpaceScene() {
 
     animate();
 
+    // Timeout para esconder o loader inicial
+    const loaderTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // 2 segundos para o loader
+
     const timeout = setTimeout(() => {
       setShowComponents(true);
     }, animationDuration * 1000);
@@ -221,11 +208,37 @@ export default function SpaceScene() {
     return () => {
       window.removeEventListener("resize", handleResize);
       clearTimeout(timeout);
+      clearTimeout(loaderTimeout);
     };
   }, []);
 
   return (
     <main className="relative h-screen w-full overflow-hidden">
+      {/* Loading Screen */}
+      {isLoading && (
+        <div className="absolute inset-0 w-full h-full bg-black z-50 flex flex-col justify-center items-center">
+          <div className="flex flex-col items-center justify-center">
+            {/* Spinner animado com cores de Marte */}
+            <div className="w-16 h-16 border-4 border-red-900/30 border-t-red-500 rounded-full animate-spin mb-6"></div>
+
+            {/* Texto de loading */}
+            <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">
+              Loading Mars Experience
+            </div>
+
+            {/* Barra de progresso com cores de Marte */}
+            <div className="w-64 h-1 bg-red-900/20 rounded-full overflow-hidden mb-4">
+              <div className="h-full bg-gradient-to-r from-red-500 via-orange-500 to-red-400 rounded-full animate-pulse"></div>
+            </div>
+
+            {/* Texto secundário */}
+            <div className="text-red-300 text-sm text-center">
+              Preparing journey to Mars...
+            </div>
+          </div>
+        </div>
+      )}
+
       <StarfieldAnimation duration={5} />
       <div
         className={`absolute inset-0 w-full h-full bg-black/40 z-30 flex justify-center items-center 
