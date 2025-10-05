@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import StarfieldAnimation from "./components/starfield-animation";
@@ -9,10 +8,13 @@ import { createEarth } from "./components/Earth";
 import { createMars } from "./components/Mars";
 import AISearchModal from "./components/AISearchModal";
 import { useAISearch } from "./hooks/useAISearch";
+import StoriesDialog from "./components/StoriesDialog";
 
 export default function SpaceScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { isOpen, openModal, closeModal } = useAISearch();
+  const [isStoriesModalOpen, setIsStoriesModalOpen] = useState(false);
+  const [showComponents, setShowComponents] = useState(false); // Novo estado
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -128,6 +130,10 @@ export default function SpaceScene() {
 
     animate();
 
+    const timeout = setTimeout(() => {
+      setShowComponents(true);
+    }, animationDuration * 1000);
+
     // Resize handler
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -138,17 +144,36 @@ export default function SpaceScene() {
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      clearTimeout(timeout);
     };
   }, []);
 
   return (
     <main className="relative h-screen w-full overflow-hidden">
       <StarfieldAnimation duration={5} />
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full z-20"
+      <div
+        className={`absolute inset-0 w-full h-full bg-black/40 z-30 flex justify-center items-center 
+  transition-opacity duration-700 ease-out
+  ${
+    showComponents
+      ? "opacity-100 translate-y-0"
+      : "opacity-0 translate-y-4 pointer-events-none"
+  }`}
+      >
+        <button
+          className="h-fit py-2 px-4 rounded-md bg-gradient-to-r from-red-500/20 via-orange-500/20 to-red-400/20 hover:bg-red-500/30 transition-colors duration-300 border border-red-300/20 shadow-lg shadow-red-500/10 text-white  font-semibold"
+          onClick={() => setIsStoriesModalOpen(true)}
+        >
+          Explore Stories
+        </button>
+      </div>
+
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-20" />
+      {showComponents && <AISearchModal isOpen={isOpen} />}
+      <StoriesDialog
+        open={isStoriesModalOpen}
+        onOpenChange={setIsStoriesModalOpen}
       />
-      <AISearchModal isOpen={isOpen} />
     </main>
   );
 }

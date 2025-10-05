@@ -8,10 +8,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface StoriesDialogProps {
-  isOpen: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export default function StoriesDialog({ isOpen }: StoriesDialogProps) {
+export default function StoriesDialog({
+  open,
+  onOpenChange,
+}: StoriesDialogProps) {
   const stories = [
     {
       id: "olympus-mons",
@@ -48,23 +52,23 @@ export default function StoriesDialog({ isOpen }: StoriesDialogProps) {
   }
 
   return (
-    <Dialog open={isOpen}>
-      <DialogContent className="max-h-[92vh] grid-rows-[auto_1fr] min-h-0">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[92vh] md:max-w-[800px] grid-rows-[auto_1fr] min-h-0">
         <DialogHeader className="shrink-0">
           <DialogTitle>Pick a story</DialogTitle>
         </DialogHeader>
 
         <ScrollArea className="min-h-0 overflow-y-auto">
-          <div className="flex flex-col gap-4">
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
             {stories.length > 0 &&
               stories.map((story) => (
                 <Card
                   key={story.name}
-                  className="relative bg-cover bg-center border p-0 rounded-lg overflow-hidden group hover:shadow-white/20 transition-shadow duration-300"
+                  className="relative bg-cover h-[200px] bg-center border p-0 rounded-lg overflow-hidden group hover:shadow-white/20 transition-shadow duration-300"
                   style={{ backgroundImage: `url('${story.imageUrl}')` }}
                   onClick={() => handleStoryClick(story.id)}
                 >
-                  <div className="absolute inset-0 bg-black/60 transition-opacity duration-300 group-hover:opacity-50" />
+                  <div className="absolute inset-0 bg-black/60 transition-opacity duration-300 group-hover:opacity-50 h-[200px]" />
                   <CardContent className="relative z-10 flex flex-col gap-2 text-white p-4">
                     <h1 className="font-semibold text-xl">{story.name}</h1>
                     <p className="text-sm text-white/80">{story.description}</p>
