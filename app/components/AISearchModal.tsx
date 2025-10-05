@@ -256,9 +256,10 @@ const planetStyles = `
 
 interface AISearchModalProps {
   isOpen: boolean;
+  onClose?: () => void;
 }
 
-export default function AISearchModal({ isOpen }: AISearchModalProps) {
+export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
   const [query, setQuery] = useState("");
   const [response, setResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -520,7 +521,10 @@ export default function AISearchModal({ isOpen }: AISearchModalProps) {
                   </div>
                 </div>
                 <button
-                  onClick={() => setIsExpanded(false)}
+                  onClick={() => {
+                    setIsExpanded(false);
+                    if (onClose) onClose();
+                  }}
                   className="p-2 hover:bg-slate-600/20 rounded-lg transition-colors group"
                 >
                   <svg
