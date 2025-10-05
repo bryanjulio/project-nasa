@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 
-type TabletScreen = "apps" | "chat" | "settings";
+type TabletScreen = "apps" | "chat" | "settings" | "marsmap";
 
 interface TabletContextType {
   currentScreen: TabletScreen;
