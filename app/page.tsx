@@ -1,31 +1,33 @@
+
 "use client";
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { TilesRenderer, GlobeControls } from "3d-tiles-renderer";
-import { CesiumIonAuthPlugin } from "3d-tiles-renderer/plugins";
-import Tablet from "./components/tablet/Tablet";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import StarfieldAnimation from "./components/starfield-animation";
+import { createEarth } from "./components/Earth";
+import { createMars } from "./components/Mars";
 import AISearchModal from "./components/AISearchModal";
+import { useAISearch } from "./hooks/useAISearch";
 
-export default function Home() {
+export default function SpaceScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { isOpen, openModal, closeModal } = useAISearch();
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
     // Cena
     const scene = new THREE.Scene();
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 1);
-    scene.add(directionalLight);
+    scene.background = null; // deixa a cena sem fundo, para o canvas ser transparente
 
-    // Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
+      alpha: true,
     });
+    renderer.setClearColor(0x000000, 0); // fundo transparente
+
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -34,48 +36,99 @@ export default function Home() {
       60,
       window.innerWidth / window.innerHeight,
       1,
-      1e8
+      1e12
     );
-    camera.position.set(0, 0, 10000000);
-    camera.lookAt(0, 0, 0);
-
-    // Tiles do Cesium Ion (Marte)
-    const ionToken = process.env.NEXT_PUBLIC_CESIUM_ION_TOKEN;
-    const assetId = 3644333; // Cesium Mars
-    const tilesRenderer = new TilesRenderer();
-    tilesRenderer.registerPlugin(
-      new CesiumIonAuthPlugin({
-        apiToken: ionToken!,
-        assetId: assetId.toString(),
-      })
-    );
-    tilesRenderer.group.rotation.x = -Math.PI / 2; // polo norte "para cima"
-    scene.add(tilesRenderer.group);
-    tilesRenderer.setCamera(camera);
 
     // Controles
-    const controls = new GlobeControls(
-      scene,
-      camera,
-      renderer.domElement,
-      tilesRenderer
-    );
+    const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.minDistance = 1000;
+    controls.enabled = false;
+    controls.rotateSpeed = 0.5;
 
-    // Loop
-    let frameId: number;
+    // Luzes
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(directionalLight);
+
+    // PLANETAS: posições reais simplificadas
+    const earthPosition = new THREE.Vector3(0, 0, 0); // origem
+    const marsPosition = new THREE.Vector3(225e6 * 1000, 0, 0); // 225 milhões de km adiante
+
+    // Câmera começa atrás da Terra
+    const startPosition = new THREE.Vector3(-2e8 * 1000, 0.78e7 * 1000, 0); // 20 milhões de km acima
+
+    camera.position.copy(startPosition);
+    camera.lookAt(marsPosition); // Olha para Marte desde o início
+
+    // Representação da Terra
+    const earthMesh = createEarth();
+    earthMesh.position.copy(earthPosition);
+    scene.add(earthMesh);
+
+    // Representação de Marte
+    const marsMesh = createMars();
+    marsMesh.position.copy(marsPosition);
+    scene.add(marsMesh);
+
+    const distanceFromMars = 3 * 3389e3; // 5x o raio
+    const endPosition = marsPosition
+      .clone()
+      .add(new THREE.Vector3(-distanceFromMars, 0, 0));
+
+    // Animação
+    const animationDuration = 5; // segundos
+    const startTime = performance.now();
+    let earthDestroyed = false;
+
     const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      controls.update();
-      tilesRenderer.setResolutionFromRenderer(camera, renderer);
-      camera.updateMatrixWorld();
-      tilesRenderer.update();
+      const now = performance.now();
+      const elapsed = (now - startTime) / 1000;
+      const t = Math.min(elapsed / animationDuration, 1);
+      const easeInOut = (t: number) =>
+        t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+      if (t < 1) {
+        const easedT = easeInOut(t);
+        camera.position.lerpVectors(startPosition, endPosition, easedT);
+        camera.lookAt(marsPosition); // Sempre olhar para Marte
+      } else {
+        if (!earthDestroyed) {
+          scene.remove(earthMesh);
+          earthMesh.geometry.dispose();
+          (earthMesh.material as THREE.Material).dispose();
+          earthDestroyed = true;
+        }
+        controls.enabled = true;
+        controls.target.copy(marsPosition);
+        controls.minDistance = 3389e3 * 1.3;
+        controls.maxDistance = 3389e3 * 10;
+        // Dynamically adjust rotateSpeed based on distance
+        const distance = camera.position.distanceTo(marsPosition);
+        const minRotateSpeed = 0.35; // Slower when very close
+        const maxRotateSpeed = 0.6; // Faster when far
+        const minDistanceForSpeed = controls.minDistance; // Distance at which speed is minRotateSpeed
+        const maxDistanceForSpeed = controls.maxDistance; // Distance at which speed is maxRotateSpeed
+
+        controls.rotateSpeed = THREE.MathUtils.mapLinear(
+          distance,
+          minDistanceForSpeed,
+          maxDistanceForSpeed,
+          minRotateSpeed,
+          maxRotateSpeed
+        );
+        controls.update();
+      }
+
       renderer.render(scene, camera);
+      requestAnimationFrame(animate);
     };
+
     animate();
 
-    // Resize
+    // Resize handler
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -84,18 +137,18 @@ export default function Home() {
     window.addEventListener("resize", handleResize);
 
     return () => {
-      cancelAnimationFrame(frameId);
       window.removeEventListener("resize", handleResize);
-      tilesRenderer.dispose();
-      controls.dispose();
-      renderer.dispose();
     };
   }, []);
 
   return (
-    <div className="w-screen h-screen">
-      <canvas ref={canvasRef} className="block w-full h-full" />
-      <Tablet />
-    </div>
+    <main className="relative h-screen w-full overflow-hidden">
+      <StarfieldAnimation duration={5} />
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full z-20"
+      />
+      <AISearchModal isOpen={isOpen} />
+    </main>
   );
 }
