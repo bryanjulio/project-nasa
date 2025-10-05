@@ -61,22 +61,24 @@ export default function StarfieldAnimation({
     // Animation loop
     let animationFrameId: number;
 
+    const fadeInDuration = 2; // segundos
+
     const animate = () => {
-      let fadeOpacity = 1;
+      const now = Date.now();
+      const elapsed = (now - startTime) / 1000;
+
+      // Fade in no começo
+      const fadeInOpacity = Math.min(elapsed / fadeInDuration, 1);
+      // Fade out no final
+      let fadeOpacity = fadeInOpacity;
       if (duration !== undefined) {
-        const elapsed = (Date.now() - startTime) / 1000;
-
-        // Start fading out in the last fadeDuration seconds
         if (elapsed >= duration - fadeDuration) {
-          const fadeProgress =
+          const fadeOutProgress =
             (elapsed - (duration - fadeDuration)) / fadeDuration;
-          fadeOpacity = 1 - fadeProgress;
+          fadeOpacity = Math.min(fadeInOpacity, 1 - fadeOutProgress);
         }
-
         if (elapsed >= duration) {
           shouldStop = true;
-          ctx.fillStyle = "rgba(0, 0, 0, 1)";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
           return;
         }
       }
@@ -135,7 +137,9 @@ export default function StarfieldAnimation({
       }
     };
 
-    animate();
+    setTimeout(() => {
+      animate();
+    }, 1200);
 
     // Cleanup
     return () => {
@@ -147,8 +151,7 @@ export default function StarfieldAnimation({
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-      aria-label="Animação de estrelas no espaço"
+      className="absolute inset-0 w-full h-full pointer-events-none z-10"
     />
   );
 }
