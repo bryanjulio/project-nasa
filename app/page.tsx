@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { TilesRenderer, GlobeControls } from "3d-tiles-renderer";
 import { CesiumIonAuthPlugin } from "3d-tiles-renderer/plugins";
 import Tablet from "./components/tablet/Tablet";
+import AISearchModal from "./components/AISearchModal";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
