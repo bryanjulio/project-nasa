@@ -5,11 +5,13 @@ import { useTabletRouter } from "./TabletContext";
 import AppsScreen from "../screens/AppsScreen";
 import ChatScreen from "../screens/ChatScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import MarsMapScreen from "../screens/MarsMapScreen";
 
 const screens = {
   apps: AppsScreen,
   chat: ChatScreen,
   settings: SettingsScreen,
+  marsmap: MarsMapScreen,
 };
 
 export default function TabletRouter() {
