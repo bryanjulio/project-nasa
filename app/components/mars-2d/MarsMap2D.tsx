@@ -1,16 +1,16 @@
 "use client";
 
-import { useRef, useEffect, useCallback, useState } from "react";
+import { useRef, useEffect, useCallback, useState, useMemo } from "react";
 import { useTileLoader, type LayerConfig } from "./useTileLoader";
-import {
-  TILE_SIZE,
-  MIN_ZOOM,
-  MAX_ZOOM,
-  getTileGrid,
-  normalizeCol,
-  isValidRow,
-} from "./utils";
+import { TILE_SIZE, MIN_ZOOM, MAX_ZOOM, getTileGrid } from "./utils";
+import { latLonToPixel, pixelToLatLon } from "./coordinateUtils";
+import { drawLocationPin } from "./pinRenderer";
 import { Layers } from "lucide-react";
+
+interface MarsMap2DProps {
+  latitude?: number;
+  longitude?: number;
+}
 
 // Camadas disponíveis
 const AVAILABLE_LAYERS: Record<
@@ -25,40 +25,42 @@ const AVAILABLE_LAYERS: Record<
     format: "jpg",
     style: "default",
   },
-  viking_gray: {
-    name: "Viking Grayscale",
-    description: "Mars Viking Grayscale Mosaic (232m/pixel)",
-    endpoint: "Mars_Viking_MDIM21_Mosaic_global_232m",
-    tileMatrixSet: "default028mm",
-    format: "jpg",
-    style: "default",
-  },
-  mola_color: {
-    name: "MOLA Color Relief",
-    description: "Mars Orbiter Laser Altimeter - Color (463m/pixel)",
-    endpoint: "Mars_MGS_MOLA_ClrShade_merge_global_463m",
-    tileMatrixSet: "default028mm",
-    format: "png",
-    style: "default",
-  },
-  themis_day: {
-    name: "THEMIS Daytime IR",
-    description: "Thermal Emission Imaging System - Day (100m/pixel)",
-    endpoint: "Mars_MO_THEMIS_Day_IR_global_100m",
-    tileMatrixSet: "default028mm",
-    format: "png",
-    style: "default",
-  },
+  // viking_gray: {
+  //   name: "Viking Grayscale",
+  //   description: "Mars Viking Grayscale Mosaic (232m/pixel)",
+  //   endpoint: "Mars_Viking_MDIM21_Mosaic_global_232m",
+  //   tileMatrixSet: "default028mm",
+  //   format: "jpg",
+  //   style: "default",
+  // },
+  // mola_color: {
+  //   name: "MOLA Color Relief",
+  //   description: "Mars Orbiter Laser Altimeter - Color (463m/pixel)",
+  //   endpoint: "Mars_MGS_MOLA_ClrShade_merge_global_463m",
+  //   tileMatrixSet: "default028mm",
+  //   format: "png",
+  //   style: "default",
+  // },
+  // themis_day: {
+  //   name: "THEMIS Daytime IR",
+  //   description: "Thermal Emission Imaging System - Day (100m/pixel)",
+  //   endpoint: "Mars_MO_THEMIS_Day_IR_global_100m",
+  //   tileMatrixSet: "default028mm",
+  //   format: "png",
+  //   style: "default",
+  // },
 };
 
 /**
  * Componente principal do mapa 2D de Marte
  * Usa NASA Trek WMTS API com suporte a múltiplas camadas
  */
-export default function MarsMap2D() {
+export default function MarsMap2D({
+  latitude,
+  longitude,
+}: MarsMap2DProps = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameRef = useRef<number>();
-
+  const animationFrameRef = useRef<number | undefined>(undefined);
   const [zoom, setZoom] = useState(MIN_ZOOM);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -66,6 +68,10 @@ export default function MarsMap2D() {
   const [currentLayerId, setCurrentLayerId] = useState("viking_color");
   const [showLayerSelector, setShowLayerSelector] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [mouseLatLon, setMouseLatLon] = useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
 
   const dragStartRef = useRef({ x: 0, y: 0 });
   const dragOffsetRef = useRef({ x: 0, y: 0 });
@@ -74,16 +80,42 @@ export default function MarsMap2D() {
   const { loadTile, loadingCount, cacheSize, cancelAll } =
     useTileLoader(currentLayer);
 
+  // Memoize grid and map dimensions to avoid recalculating on every render
+  const mapDimensions = useMemo(() => {
+    const { cols, rows } = getTileGrid(zoom);
+    return {
+      cols,
+      rows,
+      mapWidth: cols * TILE_SIZE,
+      mapHeight: rows * TILE_SIZE,
+    };
+  }, [zoom]);
+
   /**
-   * Centralizar mapa ao iniciar
-   */
-  useEffect(() => {
+   * Centralizar mapa ao iniciar ou quando lat/lon mudam
+   */ useEffect(() => {
     if (!isInitialized && canvasSize.width > 0 && canvasSize.height > 0) {
-      // Começar sempre centralizado
-      setOffset({ x: 0, y: 0 });
+      if (latitude !== undefined && longitude !== undefined) {
+        // Se lat/lon foram fornecidos, centralizar nessa posição
+        const { mapWidth, mapHeight } = mapDimensions;
+        const pinPos = latLonToPixel(latitude, longitude, zoom);
+
+        // Calcular offset para centralizar o pin na tela
+        const offsetX =
+          canvasSize.width / 2 - pinPos.x - (canvasSize.width - mapWidth) / 2;
+        const offsetY =
+          canvasSize.height / 2 -
+          pinPos.y -
+          (canvasSize.height - mapHeight) / 2;
+
+        setOffset({ x: offsetX, y: offsetY });
+      } else {
+        // Começar centralizado no mapa
+        setOffset({ x: 0, y: 0 });
+      }
       setIsInitialized(true);
     }
-  }, [isInitialized, canvasSize, zoom]);
+  }, [isInitialized, canvasSize, zoom, latitude, longitude, mapDimensions]);
 
   /**
    * Troca de camada
@@ -123,14 +155,11 @@ export default function MarsMap2D() {
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       ctx.scale(dpr, dpr);
-    } // Limpar canvas
-    ctx.fillStyle = "#000000";
+    } // Limpar canvas    ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, rect.width, rect.height);
-    const { cols, rows } = getTileGrid(zoom);
 
-    // Tamanho total do mapa em pixels
-    const mapWidth = cols * TILE_SIZE;
-    const mapHeight = rows * TILE_SIZE;
+    // Usar dimensões memoizadas
+    const { cols, rows, mapWidth, mapHeight } = mapDimensions;
 
     // Calcular posição inicial: centralizar o mapa no canvas
     const startX = (rect.width - mapWidth) / 2 + offset.x;
@@ -150,7 +179,25 @@ export default function MarsMap2D() {
         const drawY = Math.floor(startY + row * TILE_SIZE);
         tilesToLoad.push({ col, row, x: drawX, y: drawY });
       }
-    }
+    } // Função para desenhar o pin
+    const drawPin = () => {
+      if (
+        latitude === undefined ||
+        longitude === undefined ||
+        !canvasRef.current
+      )
+        return;
+
+      const canvas = canvasRef.current;
+      const pinCtx = canvas.getContext("2d", { alpha: false });
+      if (!pinCtx) return;
+
+      const pinPos = latLonToPixel(latitude, longitude, zoom);
+      const pinScreenX = startX + pinPos.x;
+      const pinScreenY = startY + pinPos.y;
+
+      drawLocationPin(pinCtx, pinScreenX, pinScreenY);
+    };
 
     // Carregar e renderizar tiles
     tilesToLoad.forEach(async (tile) => {
@@ -159,10 +206,14 @@ export default function MarsMap2D() {
         const currentCtx = canvasRef.current.getContext("2d", { alpha: false });
         if (currentCtx) {
           currentCtx.drawImage(img, tile.x, tile.y, TILE_SIZE, TILE_SIZE);
+
+          // Redesenhar o pin após cada tile para mantê-lo sempre no topo
+          drawPin();
         }
       }
-    });
-  }, [zoom, offset, loadTile, canvasSize]);
+    }); // Desenhar pin inicialmente (antes dos tiles carregarem)
+    drawPin();
+  }, [zoom, offset, loadTile, canvasSize, latitude, longitude, mapDimensions]);
 
   /**
    * Re-renderizar quando necessário
@@ -261,21 +312,43 @@ export default function MarsMap2D() {
     },
     [offset]
   );
-
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      if (!isDragging) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-      const dx = e.clientX - dragStartRef.current.x;
-      const dy = e.clientY - dragStartRef.current.y;
-      const newOffset = {
-        x: dragOffsetRef.current.x + dx,
-        y: dragOffsetRef.current.y + dy,
-      };
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
 
-      setOffset(newOffset);
+      // Calcular posição do mouse no mapa
+      const { mapWidth, mapHeight } = mapDimensions;
+      const startX = (rect.width - mapWidth) / 2 + offset.x;
+      const startY = (rect.height - mapHeight) / 2 + offset.y;
+
+      const mapX = mouseX - startX;
+      const mapY = mouseY - startY;
+
+      // Verificar se o mouse está dentro do mapa
+      if (mapX >= 0 && mapX < mapWidth && mapY >= 0 && mapY < mapHeight) {
+        const coords = pixelToLatLon(mapX, mapY, zoom);
+        setMouseLatLon(coords);
+      } else {
+        setMouseLatLon(null);
+      }
+
+      // Arrastar mapa
+      if (isDragging) {
+        const dx = e.clientX - dragStartRef.current.x;
+        const dy = e.clientY - dragStartRef.current.y;
+        const newOffset = {
+          x: dragOffsetRef.current.x + dx,
+          y: dragOffsetRef.current.y + dy,
+        };
+        setOffset(newOffset);
+      }
     },
-    [isDragging]
+    [isDragging, zoom, offset, mapDimensions]
   );
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -293,8 +366,6 @@ export default function MarsMap2D() {
     [zoomAtPoint]
   );
 
-  const grid = getTileGrid(zoom);
-
   return (
     <div className="relative w-full h-full bg-black">
       <canvas
@@ -307,7 +378,6 @@ export default function MarsMap2D() {
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
       />
-
       {/* Seletor de Camadas */}
       <div className="absolute top-4 left-4 z-10">
         <button
@@ -340,8 +410,22 @@ export default function MarsMap2D() {
             ))}
           </div>
         )}
-      </div>
-
+      </div>{" "}
+      {/* Display de Coordenadas */}
+      {mouseLatLon && (
+        <div className="absolute top-4 right-20 bg-black/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-red-500/30 shadow-lg z-10">
+          <div className="text-red-400 font-mono text-xs space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400">Lat:</span>
+              <span className="text-white">{mouseLatLon.lat.toFixed(4)}°</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400">Lon:</span>
+              <span className="text-white">{mouseLatLon.lon.toFixed(4)}°</span>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Controles de Zoom */}
       <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
         <button
@@ -361,19 +445,18 @@ export default function MarsMap2D() {
           −
         </button>
       </div>
-
       {/* Info HUD */}
       <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg px-4 py-3 border border-red-500/30 pointer-events-none shadow-lg z-10">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
           <span className="text-red-400 font-mono text-sm">NASA TREK WMTS</span>
-        </div>
+        </div>{" "}
         <div className="text-gray-300 text-xs space-y-1">
           <p>
             Zoom: {zoom}/{MAX_ZOOM}
           </p>
           <p>
-            Grid: {grid.cols}×{grid.rows} tiles
+            Grid: {mapDimensions.cols}×{mapDimensions.rows} tiles
           </p>
           <p>Cache: {cacheSize} tiles</p>
           {loadingCount > 0 && (
@@ -381,7 +464,6 @@ export default function MarsMap2D() {
           )}
         </div>
       </div>
-
       {/* Instruções */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-sm rounded-lg px-6 py-2 border border-red-500/30 shadow-lg z-10">
         <p className="text-gray-400 text-sm">

@@ -1,5 +1,10 @@
-import { useState, useRef, useCallback, useEffect } from "react";
-import { getTileGrid, getVerticalOffsetLimits, MIN_ZOOM, MAX_ZOOM } from "./utils";
+import { useState, useRef, useCallback } from "react";
+import {
+  getTileGrid,
+  getVerticalOffsetLimits,
+  MIN_ZOOM,
+  MAX_ZOOM,
+} from "./utils";
 
 /**
  * Hook para controlar zoom, pan e interações do mapa

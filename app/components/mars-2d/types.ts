@@ -1,7 +1,3 @@
-/**
- * Tipos para o sistema de mapa 2D de Marte
- */
-
 export interface TileCoordinates {
   z: number; // Zoom level
   x: number; // TileCol
