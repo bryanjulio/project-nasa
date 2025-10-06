@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
@@ -10,14 +11,24 @@ import {
   Thermometer,
   Mountain,
   X,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useMarsCoordinates } from "../hooks/useMarsCoordinates";
+
+interface MediaItem {
+  type: "image" | "video" | "img";
+  path: string;
+  caption?: string;
+  source?: string;
+}
 
 interface Step {
   step: number;
   title: string;
   description: string;
   details?: string;
+  media?: MediaItem[];
 }
 
 interface MarsStory {
@@ -96,6 +107,7 @@ function CustomStoryPanelContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const { marsStories, loading } = useMarsStories();
   const { setCoordinate } = useMarsCoordinates();
 
@@ -104,7 +116,6 @@ function CustomStoryPanelContent() {
   const coordinateParam = searchParams.get("coordinate");
 
   const story = marsStories.find((s) => s.id === storyId);
-  const isOpen = Boolean(storyId);
 
   useEffect(() => {
     if (stepParam) {
@@ -116,6 +127,11 @@ function CustomStoryPanelContent() {
       setCurrentStep(1);
     }
   }, [stepParam, story?.steps.length]);
+
+  // Reset description expansion when story changes
+  useEffect(() => {
+    setIsDescriptionExpanded(false);
+  }, [storyId]);
 
   // Processar coordenadas da query string
   useEffect(() => {
@@ -188,35 +204,123 @@ function CustomStoryPanelContent() {
 
   const currentStepData = story.steps.find((s) => s.step === currentStep);
 
+  const renderDescription = (description: string) => {
+    const isLongDescription = description.length > 300;
+    const truncatedDescription = isLongDescription
+      ? description.substring(0, 300) + "..."
+      : description;
+
+    if (!isLongDescription) {
+      return <p className="text-slate-300/90 text-sm">{description}</p>;
+    }
+
+    return (
+      <div className="space-y-2">
+        <p className="text-slate-300/90 text-sm">
+          {isDescriptionExpanded ? description : truncatedDescription}
+        </p>
+        <button
+          onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+          className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-300 transition-colors group"
+        >
+          {isDescriptionExpanded ? (
+            <>
+              <span>Show less</span>
+              <ChevronUp className="w-3 h-3 group-hover:scale-110 transition-transform" />
+            </>
+          ) : (
+            <>
+              <span>Read more</span>
+              <ChevronDown className="w-3 h-3 group-hover:scale-110 transition-transform" />
+            </>
+          )}
+        </button>
+      </div>
+    );
+  };
+
+  const renderMedia = (media: MediaItem[]) => {
+    if (!media || media.length === 0) return null;
+
+    return (
+      <div className="space-y-3">
+        {media.map((item, index) => (
+          <div key={index} className="space-y-2">
+            <div className="relative rounded-lg overflow-hidden bg-slate-800/50 border border-slate-600/30">
+              {item.type === "video" ? (
+                <video
+                  className="w-full h-auto max-h-48 object-cover"
+                  controls
+                  preload="metadata"
+                >
+                  <source src={`/stories/${item.path}`} type="video/webm" />
+                  <source src={`/stories/${item.path}`} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (item.type === "image" || item.type === "img") ? (
+                <Image
+                  src={`/stories/${item.path}`}
+                  alt={item.caption || `Step ${currentStep} media`}
+                  width={400}
+                  height={192}
+                  className="w-full h-auto max-h-48 object-cover"
+                  loading="lazy"
+                  unoptimized={true}
+                  onError={(e) => {
+                    console.error(
+                      `Failed to load image: /stories/${item.path}`
+                    );
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = "none";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-48 flex items-center justify-center bg-slate-700/50 text-slate-400">
+                  <p>Unsupported media type: {item.type}</p>
+                </div>
+              )}
+            </div>
+            {item.caption && (
+              <p className="text-xs text-slate-400 italic text-center">
+                {item.caption}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="fixed inset-y-0 right-0 w-full sm:max-w-md z-50 bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl border-l border-red-300/20 shadow-2xl shadow-red-500/10">
       {/* Glow externo sutil */}
       <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-orange-500/20 to-red-400/20 blur-sm pointer-events-none" />
 
-      <div className="flex flex-col gap-4 p-4 h-full">
-        {/* Botão de fechar */}
-        <button
-          onClick={handleClose}
-          className="absolute top-4 right-4 rounded-lg p-2 opacity-70 transition-all hover:opacity-100 hover:bg-slate-700/30 focus:outline-none focus:ring-2 focus:ring-red-400/40 focus:ring-offset-2 focus:ring-offset-transparent z-10"
-        >
-          <X className="text-slate-200 hover:text-white size-4" />
-          <span className="sr-only">Close</span>
-        </button>
-
-        {/* Header */}
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            {getTypeIcon(story.type)}
-            <h2 className="text-lg font-bold bg-gradient-to-r from-red-200 via-orange-200 to-red-400 bg-clip-text text-transparent">
-              {story.name}
-            </h2>
+      <div className="flex flex-col h-full">
+        {/* Header fixo */}
+        <div className="flex-shrink-0 p-4 border-b border-slate-600/30">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              {getTypeIcon(story.type)}
+              <h2 className="text-lg font-bold bg-gradient-to-r from-red-200 via-orange-200 to-red-400 bg-clip-text text-transparent">
+                {story.name}
+              </h2>
+            </div>
+            <button
+              onClick={handleClose}
+              className="rounded-lg p-2 opacity-70 transition-all hover:opacity-100 hover:bg-slate-700/30 focus:outline-none focus:ring-2 focus:ring-red-400/40 focus:ring-offset-2 focus:ring-offset-transparent"
+            >
+              <X className="text-slate-200 hover:text-white size-4" />
+              <span className="sr-only">Close</span>
+            </button>
           </div>
-          <p className="text-slate-300/90 text-sm">
-            {story.description || "Mission progress and exploration steps"}
-          </p>
-        </div>
 
-        <div className="flex-1 space-y-6 overflow-y-auto">
+          <div className="mb-3">
+            {renderDescription(
+              story.description || "Mission progress and exploration steps"
+            )}
+          </div>
+
           {/* Story Type Badge */}
           <div
             className={`inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r ${getTypeColor(
@@ -227,7 +331,10 @@ function CustomStoryPanelContent() {
               {story.type.replace("_", " ")}
             </span>
           </div>
+        </div>
 
+        {/* Conteúdo principal com scroll */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6">
           {/* Location and Discovery Info */}
           {(story.location || story.discovery) && (
             <div className="space-y-2">
@@ -265,13 +372,24 @@ function CustomStoryPanelContent() {
             </div>
           )}
 
-          {/* Current Step */}
+          {/* Current Step - DESTAQUE PRINCIPAL */}
           {currentStepData && (
             <div className="space-y-4">
+              {/* Step Header com navegação */}
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">
-                  Step {currentStepData.step}
-                </h3>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm">
+                    {currentStepData.step}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">
+                      {currentStepData.title}
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Step {currentStepData.step} of {story.steps.length}
+                    </p>
+                  </div>
+                </div>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
@@ -294,11 +412,9 @@ function CustomStoryPanelContent() {
                 </div>
               </div>
 
+              {/* Step Content */}
               <div className="bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-lg p-4 border border-slate-600/30">
-                <h4 className="font-semibold text-white mb-2">
-                  {currentStepData.title}
-                </h4>
-                <p className="text-slate-300 text-sm leading-relaxed mb-3">
+                <p className="text-slate-300 text-sm leading-relaxed mb-4">
                   {currentStepData.description}
                 </p>
                 {currentStepData.details && (
@@ -309,15 +425,18 @@ function CustomStoryPanelContent() {
                   </div>
                 )}
               </div>
+
+              {/* Step Media */}
+              {currentStepData.media && renderMedia(currentStepData.media)}
             </div>
           )}
 
-          {/* Progress Indicator */}
+          {/* Progress Indicator - Compacto */}
           <div className="space-y-3">
             <h4 className="text-sm font-medium text-slate-300">
               Mission Progress
             </h4>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {story.steps.map((step) => (
                 <div
                   key={step.step}
