@@ -16,6 +16,7 @@ import {
   MapPin,
   Thermometer,
   Mountain,
+  X,
 } from "lucide-react";
 import { useMarsCoordinates } from "../hooks/useMarsCoordinates";
 
@@ -180,8 +181,12 @@ function MarsStorySheetContent() {
 
   if (loading) {
     return (
-      <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-        <SheetContent side="right" className="w-full sm:max-w-md">
+      <Sheet open={isOpen} onOpenChange={() => {}}>
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-md"
+          showOverlay={false}
+        >
           <SheetHeader>
             <SheetTitle>Loading Mars Stories...</SheetTitle>
           </SheetHeader>
@@ -196,8 +201,22 @@ function MarsStorySheetContent() {
   const currentStepData = story.steps.find((s) => s.step === currentStep);
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-md">
+    <Sheet open={isOpen} onOpenChange={() => {}}>
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-md"
+        showCloseButton={false}
+        showOverlay={false}
+      >
+        {/* Botão de fechar customizado */}
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 rounded-lg p-2 opacity-70 transition-all hover:opacity-100 hover:bg-slate-700/30 focus:outline-none focus:ring-2 focus:ring-red-400/40 focus:ring-offset-2 focus:ring-offset-transparent z-50"
+        >
+          <X className="text-slate-200 hover:text-white size-4" />
+          <span className="sr-only">Close</span>
+        </button>
+
         <SheetHeader>
           <div className="flex items-center gap-3">
             {getTypeIcon(story.type)}
