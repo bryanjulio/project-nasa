@@ -391,12 +391,6 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
     }
   };
 
-  const handleClear = () => {
-    setQuery("");
-    setResponse("");
-    setError(null);
-  };
-
   const handleTooltipClose = () => {
     setShowTooltip(false);
   };
@@ -697,18 +691,6 @@ export default function AISearchModal({ isOpen, onClose }: AISearchModalProps) {
                     )}
                   </button>
                 </div>
-
-                {query && (
-                  <div className="flex gap-2 mt-3">
-                    <button
-                      type="button"
-                      onClick={handleClear}
-                      className="px-3 py-1 text-sm text-slate-300 hover:text-white transition-colors border border-slate-500/20 rounded-lg hover:bg-slate-600/15"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                )}
               </form>
 
               {/* Response Area */}

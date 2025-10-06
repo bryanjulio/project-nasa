@@ -21,6 +21,7 @@ export default function SpaceScene() {
   const [showComponents, setShowComponents] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"2D" | "3D">("3D");
+  const [showOverlay, setShowOverlay] = useState(true);
   const controlsRef = useRef<OrbitControls | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const searchParams = useSearchParams();
@@ -252,26 +253,71 @@ export default function SpaceScene() {
       )}
 
       <StarfieldAnimation duration={5} />
-      {showComponents && !isStoryActive && (
+      {showComponents && !isStoryActive && showOverlay && (
         <div
-          className={`absolute inset-0 w-full h-full bg-black/40 z-30 flex justify-center items-center 
+          className={`overlay-container absolute inset-0 w-full h-full bg-black/40 z-30 flex justify-center items-center gap-6
   transition-opacity duration-700 ease-out
   ${
-    showComponents
+    showComponents && showOverlay
       ? "opacity-100 translate-y-0"
       : "opacity-0 translate-y-4 pointer-events-none"
   }`}
         >
+          {/* Botão secundário - Free Exploration */}
           <button
-            className="h-fit py-2 px-4 rounded-md bg-gradient-to-r from-red-500/20 via-orange-500/20 to-red-400/20 hover:bg-red-500/30 transition-colors duration-300 border border-red-300/20 shadow-lg shadow-red-500/10 text-white  font-semibold"
-            onClick={() => setIsStoriesModalOpen(true)}
+            className="h-fit py-3 px-6 rounded-lg bg-gray-500/15 hover:bg-gray-500/25 transition-all duration-300 border border-gray-400/20 shadow-md shadow-gray-500/10 text-gray-300 font-medium text-base hover:shadow-lg hover:shadow-gray-500/15 hover:scale-102 backdrop-blur-sm"
+            onClick={() => {
+              setShowOverlay(false);
+              console.log("Free exploration mode - overlay hidden");
+            }}
           >
-            Explore Stories
+            Free Exploration
           </button>
+
+          {/* Botão principal - Explore Stories */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-white/15 rounded-lg blur-md scale-125 -z-10"></div>
+            <button
+              className="relative h-fit py-3 px-6 rounded-lg bg-gradient-to-r from-red-500/40 via-orange-500/40 to-red-400/40 hover:bg-red-500/50 transition-all duration-300 border border-red-300/30 shadow-lg shadow-red-500/15 text-white font-semibold text-base hover:shadow-xl hover:shadow-red-500/20 hover:scale-105 backdrop-blur-sm overflow-hidden animate-pulse-slow hover:animate-none"
+              onClick={() => setIsStoriesModalOpen(true)}
+            >
+              <span className="relative z-10">Explore Stories</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-shimmer"></div>
+            </button>
+          </div>
         </div>
       )}
 
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-20" />
+
+      {/* Botão para mostrar overlay novamente */}
+      {showComponents && !showOverlay && !isStoryActive && (
+        <div className="fixed top-6 right-6 z-40">
+          <button
+            className="group flex items-center gap-3 py-3 px-5 rounded-xl bg-gradient-to-r from-red-500/30 via-orange-500/30 to-red-400/30 hover:from-red-500/50 hover:via-orange-500/50 hover:to-red-400/50 transition-all duration-300 border border-red-300/40 shadow-lg shadow-red-500/20 text-white font-semibold text-base hover:shadow-xl hover:shadow-red-500/30 hover:scale-105 backdrop-blur-sm"
+            onClick={() => setShowOverlay(true)}
+          >
+            {/* Ícone de casa */}
+            <svg
+              className="w-5 h-5 transition-transform duration-300 group-hover:scale-110"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            <span className="relative">
+              Return to Menu
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Toggle 2D/3D Component */}
       {showComponents && (
