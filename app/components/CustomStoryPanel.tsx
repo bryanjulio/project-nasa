@@ -2,13 +2,6 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
@@ -53,7 +46,6 @@ const useMarsStories = () => {
         setMarsStories(data);
       } catch (error) {
         console.error("Error loading mars stories:", error);
-        // Fallback data em caso de erro
         setMarsStories([]);
       } finally {
         setLoading(false);
@@ -100,7 +92,7 @@ const getTypeColor = (type: string) => {
   }
 };
 
-function MarsStorySheetContent() {
+function CustomStoryPanelContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
@@ -129,13 +121,12 @@ function MarsStorySheetContent() {
   useEffect(() => {
     if (coordinateParam && story) {
       try {
-        // Formato esperado: "lat,lon" ou "lat,lon,zoom"
         const coords = coordinateParam.split(",").map(Number);
         if (coords.length >= 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
           const coordinate = {
             lat: coords[0],
             lon: coords[1],
-            zoom: coords[2] || 1000000, // zoom padrão se não especificado
+            zoom: coords[2] || 1000000,
           };
           setCoordinate(coordinate);
         }
@@ -143,7 +134,6 @@ function MarsStorySheetContent() {
         console.error("Error parsing coordinate parameter:", error);
       }
     } else if (story && story.coordinates) {
-      // Usar coordenadas padrão da história se não especificadas na query string
       try {
         const coords = story.coordinates.split(",").map(Number);
         if (coords.length >= 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
@@ -181,56 +171,52 @@ function MarsStorySheetContent() {
 
   if (loading) {
     return (
-      <Sheet open={isOpen} onOpenChange={() => {}}>
-        <SheetContent
-          side="right"
-          className="w-full sm:max-w-md"
-          showOverlay={false}
-        >
-          <SheetHeader>
-            <SheetTitle>Loading Mars Stories...</SheetTitle>
-          </SheetHeader>
+      <div className="fixed inset-y-0 right-0 w-full sm:max-w-md z-50 bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl border-l border-red-300/20 shadow-2xl shadow-red-500/10">
+        <div className="flex flex-col gap-4 p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold bg-gradient-to-r from-red-200 via-orange-200 to-red-400 bg-clip-text text-transparent">
+              Loading Mars Stories...
+            </h2>
+          </div>
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-400"></div>
           </div>
-        </SheetContent>
-      </Sheet>
+        </div>
+      </div>
     );
   }
 
   const currentStepData = story.steps.find((s) => s.step === currentStep);
 
   return (
-    <Sheet open={isOpen} onOpenChange={() => {}}>
-      <SheetContent
-        side="right"
-        className="w-full sm:max-w-md"
-        showCloseButton={false}
-        showOverlay={false}
-        onPointerDownOutside={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
-      >
-        {/* Botão de fechar customizado */}
+    <div className="fixed inset-y-0 right-0 w-full sm:max-w-md z-50 bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl border-l border-red-300/20 shadow-2xl shadow-red-500/10">
+      {/* Glow externo sutil */}
+      <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-orange-500/20 to-red-400/20 blur-sm pointer-events-none" />
+
+      <div className="flex flex-col gap-4 p-4 h-full">
+        {/* Botão de fechar */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 rounded-lg p-2 opacity-70 transition-all hover:opacity-100 hover:bg-slate-700/30 focus:outline-none focus:ring-2 focus:ring-red-400/40 focus:ring-offset-2 focus:ring-offset-transparent z-50"
+          className="absolute top-4 right-4 rounded-lg p-2 opacity-70 transition-all hover:opacity-100 hover:bg-slate-700/30 focus:outline-none focus:ring-2 focus:ring-red-400/40 focus:ring-offset-2 focus:ring-offset-transparent z-10"
         >
           <X className="text-slate-200 hover:text-white size-4" />
           <span className="sr-only">Close</span>
         </button>
 
-        <SheetHeader>
+        {/* Header */}
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
             {getTypeIcon(story.type)}
-            <SheetTitle>{story.name}</SheetTitle>
+            <h2 className="text-lg font-bold bg-gradient-to-r from-red-200 via-orange-200 to-red-400 bg-clip-text text-transparent">
+              {story.name}
+            </h2>
           </div>
-          <SheetDescription>
+          <p className="text-slate-300/90 text-sm">
             {story.description || "Mission progress and exploration steps"}
-          </SheetDescription>
-        </SheetHeader>
+          </p>
+        </div>
 
-        <div className="flex-1 space-y-6 py-6">
+        <div className="flex-1 space-y-6 overflow-y-auto">
           {/* Story Type Badge */}
           <div
             className={`inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r ${getTypeColor(
@@ -406,28 +392,30 @@ function MarsStorySheetContent() {
               </div>
             )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </div>
+    </div>
   );
 }
 
-export default function MarsStorySheet() {
+export default function CustomStoryPanel() {
   return (
     <Suspense
       fallback={
-        <Sheet open={false}>
-          <SheetContent side="right" className="w-full sm:max-w-md">
-            <SheetHeader>
-              <SheetTitle>Loading Mars Stories...</SheetTitle>
-            </SheetHeader>
+        <div className="fixed inset-y-0 right-0 w-full sm:max-w-md z-50 bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-xl border-l border-red-300/20 shadow-2xl shadow-red-500/10">
+          <div className="flex flex-col gap-4 p-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold bg-gradient-to-r from-red-200 via-orange-200 to-red-400 bg-clip-text text-transparent">
+                Loading Mars Stories...
+              </h2>
+            </div>
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-400"></div>
             </div>
-          </SheetContent>
-        </Sheet>
+          </div>
+        </div>
       }
     >
-      <MarsStorySheetContent />
+      <CustomStoryPanelContent />
     </Suspense>
   );
 }

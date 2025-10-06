@@ -10,7 +10,7 @@ import { createMars } from "./components/Mars";
 import AISearchModal from "./components/AISearchModal";
 import { useAISearch } from "./hooks/useAISearch";
 import StoriesDialog from "./components/StoriesDialog";
-import MarsStorySheet from "./components/MarsStorySheet";
+import CustomStoryPanel from "./components/CustomStoryPanel";
 import { useMarsCoordinateListener } from "./hooks/useMarsCoordinates";
 import Toggle2D3D from "./components/Toggle2D3D";
 
@@ -329,7 +329,7 @@ function SpaceSceneContent() {
         open={isStoriesModalOpen}
         onOpenChange={setIsStoriesModalOpen}
       />
-      <MarsStorySheet />
+      <CustomStoryPanel />
     </main>
   );
 }
