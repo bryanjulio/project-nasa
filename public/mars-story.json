@@ -18,21 +18,35 @@
     "steps": [
       {
         "step": 1,
-        "title": "Approach the base",
-        "description": "Navigate rover to the volcano's outer rim through the steep basal scarp",
-        "details": "The basal scarp rises up to 6 km above surrounding plains, forming a massive cliff"
+        "title": "Arrival at Tharsis",
+        "description": "Welcome to the Tharsis region — the volcanic heart of Mars. Before you rises Olympus Mons, the tallest volcano in the entire Solar System.",
+        "media": [
+          {
+            "type": "image",
+            "path": "map-province-Tharsis-Mars-data-spacecraft-Global.webp",
+            "caption": "Map of Tharsis Plateau with Olympus Mons location",
+            "source": "https://www.britannica.com/place/Tharsis"
+          }
+        ]
       },
       {
         "step": 2,
-        "title": "Collect rock samples",
-        "description": "Extract volcanic rock from the caldera complex",
-        "details": "The caldera contains overlapping collapse craters formed by magma withdrawal"
+        "title": "The Scale of a Titan",
+        "description": "At 21.9 kilometers high, Olympus Mons towers nearly three times taller than Mount Everest. Its base stretches 600 kilometers wide — as vast as the Hawaiian Islands combined.",
+        "media": [
+          {
+            "type": "image",
+            "path": "olympuseverest.jpg",
+            "caption": "Map of Tharsis Plateau with Olympus Mons location",
+            "source": "https://www.youtube.com/watch?v=Cww3yVQpcjY"
+          }
+        ]
       },
       {
         "step": 3,
-        "title": "Analyze data",
-        "description": "Process samples and send results to Earth",
-        "details": "Samples contain basaltic lava with iron oxides, silicates, and traces of halloysite clay"
+        "title": "The Summit Caldera",
+        "description": "Near the summit lies a 25-kilometer-wide, 3-kilometer-deep caldera. Each collapse here marks a chapter of volcanic eruptions that shaped this colossal Martian landscape.",
+        "media": []
       }
     ],
     "scientific_significance": "Reveals Mars' volcanic history and tectonic evolution",
@@ -49,38 +63,62 @@
     "id": "valles-marineris",
     "name": "Valles Marineris",
     "type": "canyon",
-    "description": "The largest canyon system in the Solar System, stretching over 3,000 kilometers",
-    "location": "Near Martian equator, extending from Noctis Labyrinthus to chaotic terrain",
-    "coordinates": "12.0,101.0",
-    "discovery": "1971 by Mariner 9",
+    "description": "Valles Marineris is the largest canyon system in the Solar System — a colossal scar stretching more than 3,000 kilometers along Mars’ equator. It carves through the planet’s highlands like a wound from an ancient past, plunging up to 8 kilometers deep and spanning as wide as 600 kilometers. If placed on Earth, the canyon would extend from New York to Los Angeles and could swallow the entire Grand Canyon many times over. Discovered in 1971 by NASA’s Mariner 9 spacecraft, it remains one of the most breathtaking and mysterious features of the Red Planet. Scientists believe the valley was born from the stretching of Mars’ crust near the Tharsis volcanic region, later widened by landslides, erosion, and perhaps even ancient rivers. Today, Valles Marineris stands as both a monument to Mars’ violent geological history and a key to understanding whether the planet once harbored liquid water — or even life.",
+    "location": "Extends from Noctis Labyrinthus in the west to chaotic terrain in the east, near the Martian equator.",
+    "coordinates": "12.0S,101.0E",
+    "discovery": "1971 by Mariner 9 Orbiter",
     "facts": {
       "length": "Over 3,000 km (1,860 mi)",
       "width": "Up to 600 km wide",
       "depth": "Up to 8 km deep",
-      "comparison": "More than 10 times longer and 6 times deeper than Earth's Grand Canyon",
-      "formation": "Tectonic fracture from Tharsis uplift, widened by erosion"
+      "comparison": "Ten times longer, twenty times wider, and six times deeper than Earth's Grand Canyon",
+      "formation": "Likely originated as a tectonic rift linked to Tharsis uplift, later shaped by collapse, erosion, and possible water flow"
     },
     "steps": [
       {
         "step": 1,
-        "title": "Survey from above",
-        "description": "Map the canyon using aerial drone",
-        "details": "Use MOLA laser altimeter data to create precise topographic maps"
+        "title": "Descent Over the Red Abyss",
+        "description": "From orbit, the vast gash of Valles Marineris dominates the Martian equator — a system of fractures stretching farther than the continental United States. As the camera descends, walls of red rock emerge from the haze. You’re looking at a canyon ten times longer than Earth’s Grand Canyon, its depths reaching nearly eight kilometers. Each layer of rock is a chapter of Martian history, exposed to the void.",
+        "media": [
+          {
+            "type": "video",
+            "path": "valles-marineris-1-1.webm",
+            "caption": "Flyover of Valles Marineris with true-color topography.",
+            "source": "NASA SVS (652)"
+          },
+          {
+            "type": "img",
+            "path": "valles-marineris-1-2.jpg",
+            "caption": "Viking Orbiter mosaic of the entire canyon system.",
+            "source": "NASA Image Archive"
+          }
+        ]
       },
       {
         "step": 2,
-        "title": "Descend into canyon",
-        "description": "Carefully navigate down the steep walls",
-        "details": "Walls expose layered deposits of carbonates and sulfates from ancient water"
+        "title": "Noctis Labyrinthus — The Cracked Gateway",
+        "description": "At the western edge lies Noctis Labyrinthus — a labyrinth of fractured valleys formed as Mars’ crust stretched and collapsed. These chaotic depressions mark the beginning of the canyon. Beneath the dust, scientists suspect volcanic and tectonic forces once tore the land apart, leaving behind a maze of cliffs and troughs that whisper of Mars’ interior stresses.",
+        "media": []
       },
       {
         "step": 3,
-        "title": "Study rock layers",
-        "description": "Examine geological history in exposed walls",
-        "details": "Layers reveal billions of years of Mars' geological evolution and climate history"
+        "title": "Layers of Water and Time",
+        "description": "Deep within the canyon, colorful strata line the walls — evidence of ancient lakes that may have once filled these valleys. Carbonate and sulfate minerals suggest that water pooled here billions of years ago. These mineral layers are more than rocks; they are the fossilized memory of a Mars that might have been habitable. In these depths, scientists see echoes of rivers, floods, and perhaps even the chemistry of life."
+      },
+      {
+        "step": 4,
+        "title": "The Great Mystery",
+        "description": "As you rise above the entire canyon system, the full immensity of Valles Marineris unfolds — a planetary scar that may hold the story of Mars itself. Was it created by the weight of the Tharsis volcanoes? By tectonic forces, floods, or both? The truth is still hidden in its shadows. Yet one thing is clear: this canyon is not just a feature of Mars, but a monument to its restless past — and perhaps, a clue to its forgotten oceans.",
+        "media": [
+          {
+            "type": "video",
+            "path": "valles-marineris-3-1.png",
+            "caption": "‘Flight Through Mariner Valley’ — a visual journey across Valles Marineris.",
+            "source": "NASA JPL"
+          }
+        ]
       }
     ],
-    "scientific_significance": "Clues to Mars' tectonic evolution, climate history, and potential past habitability",
     "exploration_missions": [
       "Mariner 9",
       "Viking Orbiters",
@@ -108,21 +146,48 @@
     "steps": [
       {
         "step": 1,
-        "title": "Prepare for extreme cold",
-        "description": "Test equipment in -125°C conditions",
-        "details": "Atmospheric pressure drops to only 72 pascals at the summit"
+        "title": "The Frozen Crown of the North",
+        "description": "High above the red deserts, Mars wears a crown of ice — a dazzling polar cap stretching a thousand kilometers wide. Spiraling dark canyons twist through the frost, carved by wind and time. This is the north pole of Mars — cold, ancient, and alive.",
+        "media": [
+          {
+            "type": "image",
+            "path": "35141_PIA13163.jpg",
+            "caption": "Map of Tharsis Plateau with Olympus Mons location",
+            "source": "https://science.nasa.gov/resource/northern-ice-cap-of-mars/"
+          }
+        ]
       },
       {
         "step": 2,
-        "title": "Drill ice core",
-        "description": "Extract deep ice sample for climate data",
-        "details": "Use SHARAD radar to map subsurface ice layers and dust deposits"
+        "title": "The Chasma Boreale Rift",
+        "description": "Cutting across the polar ice lies Chasma Boreale — a canyon as long as Earth’s Grand Canyon and nearly two kilometers deep. Radar from Mars Reconnaissance Orbiter reveals hidden layers below the surface — frozen stories of a shifting planet.",
+        "media": [
+          {
+            "type": "image",
+            "path": "mars_polar_deposits_main.webp",
+            "caption": "Map of Tharsis Plateau with Olympus Mons location",
+            "source": "https://www.nasa.gov/image-article/chasma-boreale-north-polar-ice-cap-of-mars/"
+          }
+        ]
       },
       {
         "step": 3,
-        "title": "Analyze ice composition",
-        "description": "Study water and CO₂ layers in sample",
-        "details": "Layers preserve records of atmospheric variation and axial tilt changes"
+        "title": "The Breath of Carbon Dioxide",
+        "description": "In the spring, sunlight awakens the poles. The dry ice — frozen carbon dioxide — turns straight into gas, bursting from below and sculpting eerie shapes: spiders, starbursts, and ghostly trails. No such landscape exists on Earth.",
+        "media": [
+          {
+            "type": "image",
+            "path": "ESP_020914_0930.jpg",
+            "caption": "Map of Tharsis Plateau with Olympus Mons location",
+            "source": "https://science.nasa.gov/resource/dry-ice-on-mars/"
+          }
+        ]
+      },
+      {
+        "step": 4,
+        "title": "The Slow Dance of Ice",
+        "description": "For fifty years, scientists searched for answers — why does Mars’ polar ice move so slowly? Now we know: gravity, wind, and the planet’s own heartbeat drive a slow, creeping flow that has shaped these poles for millions of years. The mystery endures… but the ice still whispers.",
+        "image": []
       }
     ],
     "scientific_significance": "Reveals climate cycles, atmospheric processes, and possible water resources",
@@ -153,79 +218,31 @@
     "steps": [
       {
         "step": 1,
-        "title": "Approach the formation",
-        "description": "Navigate to Bright Angel Formation in Jezero Crater",
-        "details": "Ancient delta where rivers once fed a lake billions of years ago"
+        "title": "The Lost River of Neretva Vallis",
+        "description": "Billions of years ago, water carved deep channels into the Martian surface. Now, in the dry bed of Neretva Vallis, the Perseverance rover searches for the faint traces of that vanished world — and the life it might have sheltered.",
+        "media": []
       },
       {
         "step": 2,
-        "title": "Analyze rock patterns",
-        "description": "Use SHERLOC and PIXL to study reaction fronts",
-        "details": "Detect organic carbon with phosphorus and sulfur in millimeter-scale textures"
+        "title": "The Leopard Spots of Life",
+        "description": "At the 'Bright Angel' formation, Perseverance drills into a rock named Cheyava Falls. Inside the sample, called Sapphire Canyon, lie minerals—vivianite and greigite—arranged in patterns scientists call leopard spots, possible fingerprints of ancient microbes.",
+        "media": [
+          {
+            "type": "image",
+            "path": "pia26368orig.webp",
+            "caption": "‘Flight Through Mariner Valley’ — a visual journey across Valles Marineris.",
+            "source": "https://www.nasa.gov/news-release/nasa-says-mars-rover-discovered-potential-biosignature-last-year/"
+          }
+        ]
       },
       {
         "step": 3,
-        "title": "Collect sample",
-        "description": "Extract Sapphire Canyon sample for Earth return",
-        "details": "Sealed sample tube for future Mars Sample Return mission analysis"
+        "title": "Between Science and Wonder",
+        "description": "The evidence is extraordinary — but not yet proof. These minerals could form without life, yet the absence of heat or acid marks deepens the mystery. In this fragment of stone, Mars may be whispering its oldest secret: that it once breathed.",
+        "media": []
       }
     ],
     "scientific_significance": "First detection of simultaneous organic compounds, phosphorus, and redox-sensitive minerals in lacustrine context",
-    "exploration_missions": [
-      "Perseverance Rover (Mars 2020)"
-    ]
-  },
-  {
-    "id": "mars-facts",
-    "name": "Mars: The Red Planet",
-    "type": "planet",
-    "description": "Comprehensive overview of Mars' characteristics, climate, and exploration history",
-    "location": "Solar System, 1.52 AU from Sun",
-    "coordinates": "0.0,0.0",
-    "discovery": "Known since ancient times",
-    "facts": {
-      "diameter": "6,779 km (about half of Earth's)",
-      "mass": "6.39 × 10²³ kg (~10.7% of Earth's)",
-      "gravity": "3.71 m/s² (38% of Earth's gravity)",
-      "day_length": "24 hours 39 minutes",
-      "year_length": "687 Earth days",
-      "average_temperature": "−63°C (−81°F)",
-      "atmospheric_pressure": "~600 Pa (less than 1% of Earth's)",
-      "atmosphere_composition": "95.32% CO₂, 2.7% N₂, 1.6% Ar, 0.13% O₂"
-    },
-    "steps": [
-      {
-        "step": 1,
-        "title": "Understand basic characteristics",
-        "description": "Learn about Mars' size, composition, and orbital properties",
-        "details": "Mars is about half the size of Earth with similar day length but much longer year"
-      },
-      {
-        "step": 2,
-        "title": "Explore surface features",
-        "description": "Study major geological formations and surface composition",
-        "details": "Dominant features include Olympus Mons, Valles Marineris, and Tharsis region"
-      },
-      {
-        "step": 3,
-        "title": "Investigate potential for life",
-        "description": "Examine evidence of past water and current exploration",
-        "details": "Evidence suggests Mars was habitable 3-4 billion years ago with flowing water"
-      }
-    ],
-    "scientific_significance": "Template for planetary evolution and potential future human exploration",
-    "exploration_missions": [
-      "Mariner 4",
-      "Mariner 9",
-      "Viking 1 & 2",
-      "Mars Global Surveyor",
-      "Mars Pathfinder",
-      "Mars Odyssey",
-      "Mars Express",
-      "Curiosity",
-      "InSight",
-      "Perseverance",
-      "Tianwen-1"
-    ]
+    "exploration_missions": ["Perseverance Rover (Mars 2020)"]
   }
 ]
