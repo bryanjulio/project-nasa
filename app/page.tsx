@@ -33,6 +33,11 @@ function SpaceSceneContent() {
     console.log(`Switching to ${mode} mode`);
   };
 
+  const handle3DCoordinateChange = (coordinates: { lat: number; lon: number; zoom: number }) => {
+    console.log("🌍 Moving to 3D coordinates:", coordinates);
+    goToMarsCoordinate(coordinates.lat, coordinates.lon, coordinates.zoom);
+  };
+
   // Move camera and rotate Mars to center a coordinate
   const goToMarsCoordinate = (lat: number, lon: number, zoom: number = 10000, duration = 2000) => {
     if (!marsGroupRef.current || !cameraRef.current) return;
@@ -263,7 +268,11 @@ function SpaceSceneContent() {
 
       {/* Toggle 2D/3D Component */}
       {showComponents && (
-        <Toggle2D3D onToggle={handleViewModeChange} defaultMode={viewMode} />
+        <Toggle2D3D 
+          onToggle={handleViewModeChange} 
+          on3DCoordinateChange={handle3DCoordinateChange}
+          defaultMode={viewMode} 
+        />
       )}
 
       {showComponents && <AISearchModal isOpen={isOpen} />}
