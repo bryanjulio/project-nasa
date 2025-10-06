@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface Toggle2D3DProps {
@@ -15,14 +16,10 @@ export default function Toggle2D3D({
   className,
 }: Toggle2D3DProps) {
   const [activeMode, setActiveMode] = useState<"2D" | "3D">(defaultMode);
-  const [shouldShow, setShouldShow] = useState(false);
+  const searchParams = useSearchParams();
 
-  useEffect(() => {
-    // Check if there's a 'story' query parameter in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasStoryParam = urlParams.has("story");
-    setShouldShow(hasStoryParam);
-  }, []);
+  // Check if there's a 'story' query parameter in the URL
+  const hasStoryParam = searchParams.get("story") !== null;
 
   const handleToggle = (mode: "2D" | "3D") => {
     setActiveMode(mode);
@@ -30,7 +27,7 @@ export default function Toggle2D3D({
   };
 
   // Don't render if there's no 'story' query parameter
-  if (!shouldShow) {
+  if (!hasStoryParam) {
     return null;
   }
 
