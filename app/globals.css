@@ -43,10 +43,6 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-:root {
-  background-color: black;
-}
-
 /* NASA Space Theme Animations */
 @keyframes float {
   0%,

@@ -226,7 +226,7 @@ function SpaceSceneContent() {
   }, []);
 
   return (
-    <main className="relative h-screen w-full overflow-hidden">
+    <main className="relative h-screen w-full overflow-hidden bg-black">
       {/* Loading Screen */}
       {isLoading && (
         <div className="absolute inset-0 w-full h-full bg-black z-50 flex flex-col justify-center items-center">
