@@ -7,7 +7,11 @@ import MarsMap2D from "./mars-2d/MarsMap2D";
 
 interface Toggle2D3DProps {
   onToggle: (mode: "2D" | "3D") => void;
-  on3DCoordinateChange?: (coordinates: { lat: number; lon: number; zoom: number }) => void;
+  on3DCoordinateChange?: (coordinates: {
+    lat: number;
+    lon: number;
+    zoom: number;
+  }) => void;
   defaultMode?: "2D" | "3D";
   className?: string;
 }
@@ -70,7 +74,7 @@ export default function Toggle2D3D({
   const storyCoordinates = currentStory?.coordinates
     ? currentStory.coordinates.split(",").map(Number)
     : null;
-  
+
   // Get 3D coordinates (coordinatesddd)
   const story3DCoordinates = currentStory?.coordinatesddd
     ? currentStory.coordinatesddd.split(",").map(Number)
@@ -87,7 +91,7 @@ export default function Toggle2D3D({
         rawCoordinates: currentStory?.coordinates,
       });
     }
-    
+
     if (story3DCoordinates && story3DCoordinates.length >= 3) {
       console.log("🌍 Mars3D Coordinates:", {
         latitude: story3DCoordinates[0],
@@ -109,11 +113,16 @@ export default function Toggle2D3D({
 
   // Auto-move to 3D coordinates when story loads and mode is 3D
   useEffect(() => {
-    if (activeMode === "3D" && story3DCoordinates && story3DCoordinates.length >= 3 && on3DCoordinateChange) {
+    if (
+      activeMode === "3D" &&
+      story3DCoordinates &&
+      story3DCoordinates.length >= 3 &&
+      on3DCoordinateChange
+    ) {
       on3DCoordinateChange({
         lat: story3DCoordinates[0],
         lon: story3DCoordinates[1],
-        zoom: story3DCoordinates[2]
+        zoom: story3DCoordinates[2],
       });
     }
   }, [story3DCoordinates, activeMode, on3DCoordinateChange]);
@@ -121,13 +130,18 @@ export default function Toggle2D3D({
   const handleToggle = (mode: "2D" | "3D") => {
     setActiveMode(mode);
     onToggle(mode);
-    
+
     // Se mudando para 3D e temos coordenadas 3D válidas, enviar para o componente pai
-    if (mode === "3D" && story3DCoordinates && story3DCoordinates.length >= 3 && on3DCoordinateChange) {
+    if (
+      mode === "3D" &&
+      story3DCoordinates &&
+      story3DCoordinates.length >= 3 &&
+      on3DCoordinateChange
+    ) {
       on3DCoordinateChange({
         lat: story3DCoordinates[0],
         lon: story3DCoordinates[1],
-        zoom: story3DCoordinates[2]
+        zoom: story3DCoordinates[2],
       });
     }
   };

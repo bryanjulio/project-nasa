@@ -33,13 +33,22 @@ function SpaceSceneContent() {
     console.log(`Switching to ${mode} mode`);
   };
 
-  const handle3DCoordinateChange = (coordinates: { lat: number; lon: number; zoom: number }) => {
+  const handle3DCoordinateChange = (coordinates: {
+    lat: number;
+    lon: number;
+    zoom: number;
+  }) => {
     console.log("🌍 Moving to 3D coordinates:", coordinates);
     goToMarsCoordinate(coordinates.lat, coordinates.lon, coordinates.zoom);
   };
 
   // Move camera and rotate Mars to center a coordinate
-  const goToMarsCoordinate = (lat: number, lon: number, zoom: number = 10000, duration = 2000) => {
+  const goToMarsCoordinate = (
+    lat: number,
+    lon: number,
+    zoom: number = 10000,
+    duration = 2000
+  ) => {
     if (!marsGroupRef.current || !cameraRef.current) return;
 
     const targetRotationY = THREE.MathUtils.degToRad(-lon);
@@ -63,7 +72,11 @@ function SpaceSceneContent() {
       marsGroupRef.current!.rotation.y = startRotationY + deltaRotationY * ease;
 
       const marsPos = marsGroupRef.current!.position;
-      cameraRef.current!.position.lerpVectors(startCameraPos, new THREE.Vector3(marsPos.x, marsPos.y, marsPos.z + zoom), ease);
+      cameraRef.current!.position.lerpVectors(
+        startCameraPos,
+        new THREE.Vector3(marsPos.x, marsPos.y, marsPos.z + zoom),
+        ease
+      );
       cameraRef.current!.lookAt(marsPos);
 
       if (t < 1) requestAnimationFrame(animate);
@@ -73,7 +86,11 @@ function SpaceSceneContent() {
   };
 
   useMarsCoordinateListener((coordinate) => {
-    goToMarsCoordinate(coordinate.lat, coordinate.lon, coordinate.zoom || 10000);
+    goToMarsCoordinate(
+      coordinate.lat,
+      coordinate.lon,
+      coordinate.zoom || 10000
+    );
   });
 
   useEffect(() => {
@@ -91,7 +108,12 @@ function SpaceSceneContent() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1e12);
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      window.innerWidth / window.innerHeight,
+      1,
+      1e12
+    );
     cameraRef.current = camera;
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -123,7 +145,9 @@ function SpaceSceneContent() {
     scene.add(marsGroup);
 
     const distanceFromMars = 3 * 3389e3;
-    const endPosition = marsPosition.clone().add(new THREE.Vector3(-distanceFromMars, 0, 0));
+    const endPosition = marsPosition
+      .clone()
+      .add(new THREE.Vector3(-distanceFromMars, 0, 0));
 
     const animationDuration = 5;
     const startTime = performance.now();
@@ -133,7 +157,8 @@ function SpaceSceneContent() {
       const now = performance.now();
       const elapsed = (now - startTime) / 1000;
       const t = Math.min(elapsed / animationDuration, 1);
-      const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+      const easeInOut = (t: number) =>
+        t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
       if (t < 1) {
         const easedT = easeInOut(t);
@@ -151,7 +176,13 @@ function SpaceSceneContent() {
         controls.minDistance = 3389e3 * 1.3;
         controls.maxDistance = 3389e3 * 10;
         const distance = camera.position.distanceTo(marsPosition);
-        controls.rotateSpeed = THREE.MathUtils.mapLinear(distance, controls.minDistance, controls.maxDistance, 0.35, 0.6);
+        controls.rotateSpeed = THREE.MathUtils.mapLinear(
+          distance,
+          controls.minDistance,
+          controls.maxDistance,
+          0.35,
+          0.6
+        );
         controls.update();
       }
 
@@ -190,11 +221,15 @@ function SpaceSceneContent() {
         <div className="absolute inset-0 w-full h-full bg-black z-50 flex flex-col justify-center items-center">
           <div className="flex flex-col items-center justify-center">
             <div className="w-16 h-16 border-4 border-red-900/30 border-t-red-500 rounded-full animate-spin mb-6"></div>
-            <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">Loading Mars Experience</div>
+            <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">
+              Loading Mars Experience
+            </div>
             <div className="w-64 h-1 bg-red-900/20 rounded-full overflow-hidden mb-4">
               <div className="h-full bg-gradient-to-r from-red-500 via-orange-500 to-red-400 rounded-full animate-pulse"></div>
             </div>
-            <div className="text-red-300 text-sm text-center">Preparing journey to Mars...</div>
+            <div className="text-red-300 text-sm text-center">
+              Preparing journey to Mars...
+            </div>
           </div>
         </div>
       )}
@@ -268,10 +303,10 @@ function SpaceSceneContent() {
 
       {/* Toggle 2D/3D Component */}
       {showComponents && (
-        <Toggle2D3D 
-          onToggle={handleViewModeChange} 
+        <Toggle2D3D
+          onToggle={handleViewModeChange}
           on3DCoordinateChange={handle3DCoordinateChange}
-          defaultMode={viewMode} 
+          defaultMode={viewMode}
         />
       )}
 
@@ -293,11 +328,15 @@ export default function SpaceScene() {
           <div className="absolute inset-0 w-full h-full bg-black z-50 flex flex-col justify-center items-center">
             <div className="flex flex-col items-center justify-center">
               <div className="w-16 h-16 border-4 border-red-900/30 border-t-red-500 rounded-full animate-spin mb-6"></div>
-              <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">Loading Mars Experience</div>
+              <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">
+                Loading Mars Experience
+              </div>
               <div className="w-64 h-1 bg-red-900/20 rounded-full overflow-hidden mb-4">
                 <div className="h-full bg-gradient-to-r from-red-500 via-orange-500 to-red-400 rounded-full animate-pulse"></div>
               </div>
-              <div className="text-red-300 text-sm text-center">Preparing journey to Mars...</div>
+              <div className="text-red-300 text-sm text-center">
+                Preparing journey to Mars...
+              </div>
             </div>
           </div>
         </main>
