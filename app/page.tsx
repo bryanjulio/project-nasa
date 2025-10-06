@@ -16,143 +16,111 @@ import Toggle2D3D from "./components/Toggle2D3D";
 
 function SpaceSceneContent() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const marsGroupRef = useRef<THREE.Group | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
   const { isOpen } = useAISearch();
   const [isStoriesModalOpen, setIsStoriesModalOpen] = useState(false);
   const [showComponents, setShowComponents] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"2D" | "3D">("3D");
   const [showOverlay, setShowOverlay] = useState(true);
-  const controlsRef = useRef<OrbitControls | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const searchParams = useSearchParams();
   const isStoryActive = searchParams.get("story") !== null;
 
-  // Função para lidar com mudança de modo de visualização
   const handleViewModeChange = (mode: "2D" | "3D") => {
     setViewMode(mode);
-    // Aqui você pode adicionar lógica adicional para alternar entre 2D e 3D
     console.log(`Switching to ${mode} mode`);
   };
 
-  // Função para converter coordenadas lat/lon para posição 3D
-  const latLonToPosition = (
-    lat: number,
-    lon: number,
-    radius: number = 3390000
-  ) => {
-    const phi = (90 - lat) * (Math.PI / 180);
-    const theta = (lon + 180) * (Math.PI / 180);
+  // Move camera and rotate Mars to center a coordinate
+  const goToMarsCoordinate = (lat: number, lon: number, zoom: number = 10000, duration = 2000) => {
+    if (!marsGroupRef.current || !cameraRef.current) return;
 
-    return new THREE.Vector3(
-      radius * Math.sin(phi) * Math.cos(theta),
-      radius * Math.cos(phi),
-      radius * Math.sin(phi) * Math.sin(theta)
-    );
+    const targetRotationY = THREE.MathUtils.degToRad(-lon);
+    const targetRotationX = THREE.MathUtils.degToRad(lat);
+
+    const startRotationX = marsGroupRef.current.rotation.x;
+    const startRotationY = marsGroupRef.current.rotation.y;
+
+    const deltaRotationX = targetRotationX - startRotationX;
+    const deltaRotationY = targetRotationY - startRotationY;
+
+    const startTime = Date.now();
+    const startCameraPos = cameraRef.current.position.clone();
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+
+      marsGroupRef.current!.rotation.x = startRotationX + deltaRotationX * ease;
+      marsGroupRef.current!.rotation.y = startRotationY + deltaRotationY * ease;
+
+      const marsPos = marsGroupRef.current!.position;
+      cameraRef.current!.position.lerpVectors(startCameraPos, new THREE.Vector3(marsPos.x, marsPos.y, marsPos.z + zoom), ease);
+      cameraRef.current!.lookAt(marsPos);
+
+      if (t < 1) requestAnimationFrame(animate);
+    };
+
+    animate();
   };
 
-  // Listener para mudanças de coordenadas
   useMarsCoordinateListener((coordinate) => {
-    if (controlsRef.current && cameraRef.current) {
-      const position = latLonToPosition(
-        coordinate.lat,
-        coordinate.lon,
-        coordinate.zoom || 1000000
-      );
-
-      // Animar para a nova posição
-      const startPosition = cameraRef.current.position.clone();
-      const startTime = Date.now();
-      const duration = 2000; // 2 segundos
-
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        // Easing function (ease-out)
-        const easeProgress = 1 - Math.pow(1 - progress, 3);
-
-        cameraRef.current!.position.lerpVectors(
-          startPosition,
-          position,
-          easeProgress
-        );
-        controlsRef.current!.update();
-
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        }
-      };
-
-      animate();
-    }
+    goToMarsCoordinate(coordinate.lat, coordinate.lon, coordinate.zoom || 10000);
   });
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    // Cena
     const scene = new THREE.Scene();
-    scene.background = null; // deixa a cena sem fundo, para o canvas ser transparente
+    scene.background = null;
 
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
       alpha: true,
     });
-    renderer.setClearColor(0x000000, 0); // fundo transparente
-
+    renderer.setClearColor(0x000000, 0);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 
-    // Câmera
-    const camera = new THREE.PerspectiveCamera(
-      60,
-      window.innerWidth / window.innerHeight,
-      1,
-      1e12
-    );
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1e12);
+    cameraRef.current = camera;
 
-    // Controles
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.enabled = false;
-    controls.rotateSpeed = 0.5;
+    controlsRef.current = controls;
 
-    // Luzes
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
-
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
-    // PLANETAS: posições reais simplificadas
-    const earthPosition = new THREE.Vector3(0, 0, 0); // origem
-    const marsPosition = new THREE.Vector3(225e6 * 1000, 0, 0); // 225 milhões de km adiante
-
-    // Câmera começa atrás da Terra
-    const startPosition = new THREE.Vector3(-2e8 * 1000, 0.78e7 * 1000, 0); // 20 milhões de km acima
-
+    const earthPosition = new THREE.Vector3(0, 0, 0);
+    const marsPosition = new THREE.Vector3(225e6 * 1000, 0, 0);
+    const startPosition = new THREE.Vector3(-2e8 * 1000, 0.78e7 * 1000, 0);
     camera.position.copy(startPosition);
-    camera.lookAt(marsPosition); // Olha para Marte desde o início
+    camera.lookAt(marsPosition);
 
-    // Representação da Terra
     const earthMesh = createEarth();
     earthMesh.position.copy(earthPosition);
     scene.add(earthMesh);
 
-    // Representação de Marte
     const marsMesh = createMars();
-    marsMesh.position.copy(marsPosition);
-    scene.add(marsMesh);
+    const marsGroup = new THREE.Group();
+    marsGroup.add(marsMesh);
+    marsGroup.position.copy(marsPosition);
+    marsGroupRef.current = marsGroup;
+    scene.add(marsGroup);
 
-    const distanceFromMars = 3 * 3389e3; // 5x o raio
-    const endPosition = marsPosition
-      .clone()
-      .add(new THREE.Vector3(-distanceFromMars, 0, 0));
+    const distanceFromMars = 3 * 3389e3;
+    const endPosition = marsPosition.clone().add(new THREE.Vector3(-distanceFromMars, 0, 0));
 
-    // Animação
-    const animationDuration = 5; // segundos
+    const animationDuration = 5;
     const startTime = performance.now();
     let earthDestroyed = false;
 
@@ -160,13 +128,12 @@ function SpaceSceneContent() {
       const now = performance.now();
       const elapsed = (now - startTime) / 1000;
       const t = Math.min(elapsed / animationDuration, 1);
-      const easeInOut = (t: number) =>
-        t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
 
       if (t < 1) {
         const easedT = easeInOut(t);
         camera.position.lerpVectors(startPosition, endPosition, easedT);
-        camera.lookAt(marsPosition); // Sempre olhar para Marte
+        camera.lookAt(marsPosition);
       } else {
         if (!earthDestroyed) {
           scene.remove(earthMesh);
@@ -178,27 +145,14 @@ function SpaceSceneContent() {
         controls.target.copy(marsPosition);
         controls.minDistance = 3389e3 * 1.3;
         controls.maxDistance = 3389e3 * 10;
-        // Dynamically adjust rotateSpeed based on distance
         const distance = camera.position.distanceTo(marsPosition);
-        const minRotateSpeed = 0.35; // Slower when very close
-        const maxRotateSpeed = 0.6; // Faster when far
-        const minDistanceForSpeed = controls.minDistance; // Distance at which speed is minRotateSpeed
-        const maxDistanceForSpeed = controls.maxDistance; // Distance at which speed is maxRotateSpeed
-
-        controls.rotateSpeed = THREE.MathUtils.mapLinear(
-          distance,
-          minDistanceForSpeed,
-          maxDistanceForSpeed,
-          minRotateSpeed,
-          maxRotateSpeed
-        );
+        controls.rotateSpeed = THREE.MathUtils.mapLinear(distance, controls.minDistance, controls.maxDistance, 0.35, 0.6);
         controls.update();
       }
 
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
-
     animate();
 
     // Timeout para esconder o loader inicial
@@ -210,7 +164,6 @@ function SpaceSceneContent() {
       setShowComponents(true);
     }, animationDuration * 1000);
 
-    // Resize handler
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -231,23 +184,12 @@ function SpaceSceneContent() {
       {isLoading && (
         <div className="absolute inset-0 w-full h-full bg-black z-50 flex flex-col justify-center items-center">
           <div className="flex flex-col items-center justify-center">
-            {/* Spinner animado com cores de Marte */}
             <div className="w-16 h-16 border-4 border-red-900/30 border-t-red-500 rounded-full animate-spin mb-6"></div>
-
-            {/* Texto de loading */}
-            <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">
-              Loading Mars Experience
-            </div>
-
-            {/* Barra de progresso com cores de Marte */}
+            <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">Loading Mars Experience</div>
             <div className="w-64 h-1 bg-red-900/20 rounded-full overflow-hidden mb-4">
               <div className="h-full bg-gradient-to-r from-red-500 via-orange-500 to-red-400 rounded-full animate-pulse"></div>
             </div>
-
-            {/* Texto secundário */}
-            <div className="text-red-300 text-sm text-center">
-              Preparing journey to Mars...
-            </div>
+            <div className="text-red-300 text-sm text-center">Preparing journey to Mars...</div>
           </div>
         </div>
       )}
@@ -342,15 +284,11 @@ export default function SpaceScene() {
           <div className="absolute inset-0 w-full h-full bg-black z-50 flex flex-col justify-center items-center">
             <div className="flex flex-col items-center justify-center">
               <div className="w-16 h-16 border-4 border-red-900/30 border-t-red-500 rounded-full animate-spin mb-6"></div>
-              <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">
-                Loading Mars Experience
-              </div>
+              <div className="text-white text-xl font-semibold mb-2 animate-pulse text-center">Loading Mars Experience</div>
               <div className="w-64 h-1 bg-red-900/20 rounded-full overflow-hidden mb-4">
                 <div className="h-full bg-gradient-to-r from-red-500 via-orange-500 to-red-400 rounded-full animate-pulse"></div>
               </div>
-              <div className="text-red-300 text-sm text-center">
-                Preparing journey to Mars...
-              </div>
+              <div className="text-red-300 text-sm text-center">Preparing journey to Mars...</div>
             </div>
           </div>
         </main>

@@ -6,6 +6,7 @@
     "description": "The largest volcano in the Solar System, rising over 21 kilometers above the Martian surface",
     "location": "Western hemisphere, Tharsis Plateau",
     "coordinates": "18.4,226.0",
+    "coordinatesddd": "17,-44,4000",
     "discovery": "1971 by Mariner 9",
     "facts": {
       "height": "21.9 km (13.6 mi)",
@@ -65,7 +66,8 @@
     "type": "canyon",
     "description": "Valles Marineris is the largest canyon system in the Solar System — a colossal scar stretching more than 3,000 kilometers along Mars’ equator. It carves through the planet’s highlands like a wound from an ancient past, plunging up to 8 kilometers deep and spanning as wide as 600 kilometers. If placed on Earth, the canyon would extend from New York to Los Angeles and could swallow the entire Grand Canyon many times over. Discovered in 1971 by NASA’s Mariner 9 spacecraft, it remains one of the most breathtaking and mysterious features of the Red Planet. Scientists believe the valley was born from the stretching of Mars’ crust near the Tharsis volcanic region, later widened by landslides, erosion, and perhaps even ancient rivers. Today, Valles Marineris stands as both a monument to Mars’ violent geological history and a key to understanding whether the planet once harbored liquid water — or even life.",
     "location": "Extends from Noctis Labyrinthus in the west to chaotic terrain in the east, near the Martian equator.",
-    "coordinates": "12.0S,101.0E",
+    "coordinates": "12.0,101.0",
+    "coordinatesddd": "-11,19,5000",
     "discovery": "1971 by Mariner 9 Orbiter",
     "facts": {
       "length": "Over 3,000 km (1,860 mi)",
@@ -135,6 +137,7 @@
     "description": "Dynamic regions of carbon dioxide and water ice revealing Mars' climate history",
     "location": "Northern and Southern poles",
     "coordinates": "90.0,0.0",
+    "coordinatesddd": "92,100,4800",
     "discovery": "1971 by Mariner 9",
     "facts": {
       "northern_cap_size": "~1,000 km (621 mi) across",
@@ -207,6 +210,7 @@
     "description": "Potential biosignature discovery in Jezero Crater showing complex organic-mineral interactions",
     "location": "Bright Angel Formation, northern rim of Neretva Vallis, Jezero Crater",
     "coordinates": "18.4,77.5",
+    "coordinatesddd": "18,169,4000",
     "discovery": "July 2024 by Perseverance Rover",
     "facts": {
       "age": "~3.5 billion years old",
