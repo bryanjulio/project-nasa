@@ -257,7 +257,7 @@ function CustomStoryPanelContent() {
                   <source src={`/stories/${item.path}`} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
-              ) : (item.type === "image" || item.type === "img") ? (
+              ) : item.type === "image" || item.type === "img" ? (
                 <Image
                   src={`/stories/${item.path}`}
                   alt={item.caption || `Step ${currentStep} media`}
